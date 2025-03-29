@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: ghcr.io/taquangtu/findx:master
     ports:
       - "50051:50051"
     env_file:
