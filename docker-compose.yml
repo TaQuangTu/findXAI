@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  search-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "50051:50051"
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "grpc_health_probe", "-addr=:50051"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+    restart: unless-stopped
