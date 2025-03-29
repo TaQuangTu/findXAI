@@ -29,9 +29,9 @@ func (s *SearchServer) Search(ctx context.Context, req *protogen.SearchRequest) 
 	}
 
 	params := map[string]string{
-		"lr":           fmt.Sprintf("lang_%s", req.Language),
-		"cr":           req.Country,
-		"num":          fmt.Sprintf("%d", req.NumResults),
+		"lr":  fmt.Sprintf("lang_%s", req.Language),
+		"cr":  req.Country,
+		"num": fmt.Sprintf("%d", req.NumResults),
 	}
 
 	results, err := s.googleClient.Search(ctx, req.Query, params)
@@ -42,12 +42,6 @@ func (s *SearchServer) Search(ctx context.Context, req *protogen.SearchRequest) 
 	response := &protogen.SearchResponse{
 		Results: make([]*protogen.SearchResult, 0, len(results)),
 	}
-	fmt.Print("No da den day roi ================")
-	js_res, err := json.Marshal(results)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "search failed: %v", err)
-	}
-	fmt.Println(string(js_res))
 
 	for _, r := range results {
 		response.Results = append(response.Results, &protogen.SearchResult{
