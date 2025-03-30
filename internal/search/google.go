@@ -11,15 +11,11 @@ import (
 )
 
 type Client struct {
-	apiKey     string
-	engineID   string
 	httpClient *http.Client
 }
 
-func NewClient(apiKey, engineID string) *Client {
+func NewClient() *Client {
 	return &Client{
-		apiKey:     apiKey,
-		engineID:   engineID,
 		httpClient: &http.Client{Timeout: 10 * time.Second},
 	}
 }
@@ -32,12 +28,12 @@ type GoogleSearchResult struct {
 	} `json:"items"`
 }
 
-func (c *Client) Search(ctx context.Context, query string, params map[string]string) ([]SearchResult, error) {
+func (c *Client) Search(ctx context.Context, apiKey, engineID, query string, params map[string]string) ([]SearchResult, error) {
 	baseURL := "https://www.googleapis.com/customsearch/v1"
 
 	queryParams := url.Values{}
-	queryParams.Add("key", c.apiKey)
-	queryParams.Add("cx", c.engineID)
+	queryParams.Add("key", apiKey)
+	queryParams.Add("cx", engineID)
 	queryParams.Add("q", query)
 
 	// Add optional parameters

@@ -23,7 +23,7 @@ func main() {
 	defer cancel()
 
 	resp, err := c.Search(ctx, &protogen.SearchRequest{
-		Query:      "Tình hình tiền điện tử thời gian sắp tới",
+		Query:      "Thủ Tướng Phạm Minh Chính đang ở đâu",
 		Language:   "vi",
 		Country:    "vi",
 		NumResults: 10,

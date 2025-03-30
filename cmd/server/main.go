@@ -1,32 +1,26 @@
 package main
 
 import (
+	"findx/config"
 	"findx/internal/server"
 	"findx/pkg/protogen"
-	"google.golang.org/grpc"
+	"fmt"
 	"log"
 	"net"
-	"os"
+
+	"google.golang.org/grpc"
 )
 
 func main() {
-	apiKey := os.Getenv("GOOGLE_API_KEY")
-	if apiKey == "" {
-		log.Fatal("GOOGLE_API_KEY environment variable not set")
-	}
+	cfg := config.NewConfig()
 
-	engineID := os.Getenv("GOOGLE_SEARCH_ENGINE_ID")
-	if engineID == "" {
-		log.Fatal("GOOGLE_SEARCH_ENGINE_ID environment variable not set")
-	}
-
-	lis, err := net.Listen("tcp", ":50051")
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", cfg.PORT))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	s := grpc.NewServer()
-	searchServer := server.NewSearchServer(apiKey, engineID)
+	searchServer := server.NewSearchServer(cfg.POSTGRES_DSN)
 	protogen.RegisterSearchServiceServer(s, searchServer)
 
 	log.Printf("server listening at %v", lis.Addr())

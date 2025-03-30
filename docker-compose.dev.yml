@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16.1
+    restart: always
+    shm_size: 128mb
+    volumes:
+      - /home/$USER/docker/volumes/postgres_findx:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: verylongandhardpassword
+      POSTGRES_USER: pg
+      POSTGRES_DB: findx

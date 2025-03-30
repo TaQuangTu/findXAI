@@ -13,12 +13,14 @@ import (
 
 type SearchServer struct {
 	protogen.UnimplementedSearchServiceServer
+	keyManager   *search.ApiKeyManager
 	googleClient *search.Client
 }
 
-func NewSearchServer(apiKey, engineID string) *SearchServer {
+func NewSearchServer(dsn string) *SearchServer {
 	return &SearchServer{
-		googleClient: search.NewClient(apiKey, engineID),
+		googleClient: search.NewClient(),
+		keyManager:   search.NewApiKeyManager(dsn),
 	}
 }
 
@@ -27,13 +29,18 @@ func (s *SearchServer) Search(ctx context.Context, req *protogen.SearchRequest) 
 		return nil, status.Error(codes.InvalidArgument, "query is required")
 	}
 
+	apiKey, engineID, err := s.keyManager.GetAvailableKey(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.ResourceExhausted, "no available API keys")
+	}
+
 	params := map[string]string{
 		"lr":  fmt.Sprintf("lang_%s", req.Language),
 		"cr":  req.Country,
 		"num": fmt.Sprintf("%d", req.NumResults),
 	}
 
-	results, err := s.googleClient.Search(ctx, req.Query, params)
+	results, err := s.googleClient.Search(ctx, apiKey, engineID, req.Query, params)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "search failed: %v", err)
 	}
