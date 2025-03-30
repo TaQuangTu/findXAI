@@ -3,13 +3,6 @@ FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
-# Install protoc and dependencies
-RUN apk add --no-cache \
-    protoc \
-    protobuf-dev \
-    make \
-    git
-
 # Copy dependency files first for better caching
 COPY go.mod go.sum ./
 RUN go mod download
