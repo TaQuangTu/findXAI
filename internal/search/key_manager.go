@@ -3,8 +3,8 @@ package search
 import (
 	"context"
 	"database/sql"
-	_ "github.com/lib/pq" 
 	"fmt"
+	_ "github.com/lib/pq"
 	"time"
 )
 
@@ -16,7 +16,7 @@ func NewApiKeyManager(dsn string) *ApiKeyManager {
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		fmt.Println("failed to connect to database: %w", err)
-		return nil
+		panic(err)
 	}
 
 	// Configure connection pool
