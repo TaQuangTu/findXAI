@@ -26,8 +26,7 @@ func NewApiKeyManager(dsn string) *ApiKeyManager {
 
 	// Verify connection
 	if err := db.Ping(); err != nil {
-		fmt.Println("failed to ping database: %w", err)
-		return nil
+		panic(fmt.Errorf("failed to ping database: %w", err))
 	}
 
 	return &ApiKeyManager{db: db}
