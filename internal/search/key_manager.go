@@ -44,7 +44,6 @@ func (m *ApiKeyManager) GetKeyBucket(ctx context.Context, numberOfPartition int)
 	rows, err := m.db.QueryContext(ctx, `
 		SELECT 
 				AVG(daily_queries) AS partition_avg,
-				count(*) AS number_of_records,
 				(id % ?) AS partition_id
 		FROM api_keys
 		GROUP BY partition_id
@@ -72,7 +71,6 @@ func (m *ApiKeyManager) GetKeyBucket(ctx context.Context, numberOfPartition int)
 			NumberOfPartition: numberOfPartition,
 			PartitionId:       partitionId,
 			PartitionAvg:      partitionAvg,
-			NumberOfRecords:   numberOfRecords,
 		})
 	}
 	if len(bucketList) <= 0 {
@@ -91,7 +89,7 @@ func (m *ApiKeyManager) GetAvailableKey(ctx context.Context, bucketList KeyBucke
 	for _, bucket := range bucketList {
 		var (
 			key       = fmt.Sprintf("search:get_key:partition:%d", bucket.PartitionId)
-			rateLimit = bucket.NumberOfRecords / 2
+			rateLimit = int(bucket.PartitionAvg)
 		)
 		if rateLimit < 1 {
 			rateLimit = 1
@@ -152,8 +150,7 @@ func (m *ApiKeyManager) ResetDailyCounts(limit int, updatedAt time.Time) {
 	// Run this at midnight UTC
 	_, _ = m.db.Exec(`
 		UPDATE api_keys 
-			SET daily_queries = ? 
-			AND reseted_at = NOW() 
+			SET daily_queries = ? , reseted_at = NOW() 
 		WHERE
 			reseted_at::DATE < ?
 	`, limit, updatedAt.Format("2006-01-02"))

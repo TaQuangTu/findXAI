@@ -29,11 +29,11 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	lockDb, err := lockdb.NewLockDbRedis(cfg.REDIS_LOCKDB_DNS)
+	lockDb, err := lockdb.NewLockDbRedis(cfg.REDIS_LOCKDB_DSN)
 	if err != nil {
 		return
 	}
-	rateLimiter, err := lockdb.NewOurRateLimit(cfg.REDIS_LOCKDB_DNS)
+	rateLimiter, err := lockdb.NewOurRateLimit(cfg.REDIS_RATE_LIMITDB_DSN)
 	if err != nil {
 		return
 	}

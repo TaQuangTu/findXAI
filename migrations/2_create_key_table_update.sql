@@ -1,0 +1,14 @@
+CREATE TABLE api_keys (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    api_key VARCHAR(100) NOT NULL UNIQUE,
+    search_engine_id VARCHAR(100) NOT NULL,
+    daily_queries INTEGER NOT NULL DEFAULT 100,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    reseted_at TIMESTAMP WITHOUT TIMEZONE NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMP WITHOUT TIMEZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITHOUT TIMEZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_api_keys_active ON api_keys(is_active);
+CREATE INDEX idx_api_keys_usage ON api_keys(daily_queries);
