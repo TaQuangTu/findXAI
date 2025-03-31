@@ -2,9 +2,9 @@ package lockdb
 
 import (
 	"context"
+	"findx/internal/helpers"
 	"findx/internal/system"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -27,7 +27,7 @@ type OurRateLimiter struct {
 }
 
 func NewOurRateLimit(redisDns string) (*OurRateLimiter, error) {
-	redisDb, err := strconv.Atoi("")
+	redisDb, err := helpers.ExtractRedisDB(redisDns)
 	if err != nil {
 		return nil, fmt.Errorf("invalid redis db")
 	}

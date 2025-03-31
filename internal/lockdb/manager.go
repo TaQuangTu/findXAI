@@ -2,14 +2,13 @@ package lockdb
 
 import (
 	"context"
+	"findx/internal/helpers"
 	"findx/internal/system"
 	"fmt"
-	"strconv"
-	"time"
-
 	"github.com/go-redis/redis/v8"
 	"github.com/go-redsync/redsync/v4"
 	"github.com/go-redsync/redsync/v4/redis/goredis/v8"
+	"time"
 )
 
 type ILockDb interface {
@@ -23,8 +22,7 @@ type LockDbRedis struct {
 }
 
 func NewLockDbRedis(redisDns string) (*LockDbRedis, error) {
-	// TODO: parse redis dns
-	redisDb, err := strconv.Atoi("")
+	redisDb, err := helpers.ExtractRedisDB(redisDns)
 	if err != nil {
 		return nil, fmt.Errorf("invalid redis db")
 	}

@@ -31,10 +31,12 @@ func main() {
 
 	lockDb, err := lockdb.NewLockDbRedis(cfg.REDIS_LOCKDB_DSN)
 	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
 		return
 	}
 	rateLimiter, err := lockdb.NewOurRateLimit(cfg.REDIS_RATE_LIMITDB_DSN)
 	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
 		return
 	}
 	s := grpc.NewServer()
