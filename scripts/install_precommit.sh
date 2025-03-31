@@ -36,8 +36,8 @@ else
     echo "pre-commit is already installed."
 fi
 
-# Navigate to the Go project directory (assumed to be the script's location)
-cd "$(dirname "$0")"
+# # Navigate to the Go project directory (assumed to be the script's location)
+# cd "$(dirname "$0")"
 
 # Install pre-commit hooks
 if [[ -f ".pre-commit-config.yaml" ]]; then
