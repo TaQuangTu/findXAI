@@ -16,8 +16,8 @@ CREATE INDEX idx_api_keys_usage ON api_keys(daily_queries);
 
 
 -- INSERT INTO api_keys (
---     name, 
---     api_key, 
+--     name,
+--     api_key,
 --     search_engine_id,
 --     daily_limit,
 --     is_active

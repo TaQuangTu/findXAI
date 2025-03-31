@@ -3,13 +3,6 @@ FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
-# Install protoc and dependencies
-RUN apk add --no-cache \
-    protoc \
-    protobuf-dev \
-    make \
-    git
-
 # Copy dependency files first for better caching
 COPY go.mod go.sum ./
 RUN go mod download
@@ -33,8 +26,8 @@ COPY --from=builder /app/pkg/protogen /app/pkg/protogen
 RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.37/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
 
-# Install CA certificates
-RUN apk add --no-cache ca-certificates
+# # Install CA certificates
+# RUN apk add --no-cache ca-certificates
 
 EXPOSE 50051
 

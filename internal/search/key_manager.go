@@ -42,7 +42,7 @@ func NewApiKeyManager(dsn string, lockDb lockdb.ILockDb, rateLimiter lockdb.Rate
 
 func (m *ApiKeyManager) GetKeyBucket(ctx context.Context, numberOfPartition int) (_ KeyBucketList, err error) {
 	rows, err := m.db.QueryContext(ctx, `
-		SELECT 
+		SELECT
 				AVG(daily_queries) AS partition_avg,
 				(id % ?) AS partition_id
 		FROM api_keys
@@ -116,20 +116,20 @@ func (m *ApiKeyManager) GetAvailableKey(ctx context.Context, bucketList KeyBucke
 	// Find the first available key that hasn't reached its daily limit in highest capacity bucket
 	row := m.db.QueryRowContext(ctx, `
 		WITH selected_key AS (
-    		SELECT id 
-    		FROM api_keys 
-    		WHERE 
-        		is_active = TRUE 
+    		SELECT id
+    		FROM api_keys
+    		WHERE
+        		is_active = TRUE
         		AND id % ? = ?
         		AND daily_queries > 0
-    		ORDER BY daily_queries DESC 
-    		FOR UPDATE SKIP LOCKED 
+    		ORDER BY daily_queries DESC
+    		FOR UPDATE SKIP LOCKED
     		LIMIT 1
 		)
-		UPDATE api_keys 
-		SET 
-    		daily_queries = daily_queries - 1, 
-    		updated_at = NOW() 
+		UPDATE api_keys
+		SET
+    		daily_queries = daily_queries - 1,
+    		updated_at = NOW()
 		WHERE id IN (SELECT id FROM selected_key)
 		RETURNING api_key, search_engine_id, reseted_at;
 	`, selectedBucket.NumberOfPartition, selectedBucket.PartitionId)
@@ -149,8 +149,8 @@ func (m *ApiKeyManager) GetAvailableKey(ctx context.Context, bucketList KeyBucke
 func (m *ApiKeyManager) ResetDailyCounts(limit int, updatedAt time.Time) {
 	// Run this at midnight UTC
 	_, _ = m.db.Exec(`
-		UPDATE api_keys 
-			SET daily_queries = ? , reseted_at = NOW() 
+		UPDATE api_keys
+			SET daily_queries = ? , reseted_at = NOW()
 		WHERE
 			reseted_at::DATE < ?
 	`, limit, updatedAt.Format("2006-01-02"))
