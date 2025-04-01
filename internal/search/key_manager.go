@@ -6,6 +6,7 @@ import (
 	"findx/internal/lockdb"
 	"findx/internal/system"
 	"fmt"
+	_ "github.com/lib/pq"
 	"time"
 
 	"github.com/go-redis/redis_rate/v9"
@@ -22,7 +23,7 @@ func NewApiKeyManager(dsn string, lockDb lockdb.ILockDb, rateLimiter lockdb.Rate
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		fmt.Println("failed to connect to database: %w", err)
-		return nil
+		panic(err)
 	}
 	system.RegisterRootCloser(db.Close)
 
@@ -33,8 +34,7 @@ func NewApiKeyManager(dsn string, lockDb lockdb.ILockDb, rateLimiter lockdb.Rate
 
 	// Verify connection
 	if err := db.Ping(); err != nil {
-		fmt.Println("failed to ping database: %w", err)
-		return nil
+		panic(fmt.Errorf("failed to ping database: %w", err))
 	}
 
 	return &ApiKeyManager{db: db, lockDb: lockDb, rateLimiter: rateLimiter}
