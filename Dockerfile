@@ -26,8 +26,8 @@ COPY --from=builder /app/pkg/protogen /app/pkg/protogen
 RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.37/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
 
-# Install CA certificates
-RUN apk add --no-cache ca-certificates
+# # Install CA certificates
+# RUN apk add --no-cache ca-certificates
 
 EXPOSE 50051
 

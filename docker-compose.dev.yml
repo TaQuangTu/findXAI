@@ -30,3 +30,8 @@ services:
       POSTGRES_PASSWORD: verylongandhardpassword
       POSTGRES_USER: pg
       POSTGRES_DB: findx
+
+  redis:
+    image: redis:7.4.2
+    ports:
+      - 6379:6379
