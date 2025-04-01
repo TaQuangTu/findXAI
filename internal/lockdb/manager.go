@@ -5,10 +5,11 @@ import (
 	"findx/internal/helpers"
 	"findx/internal/system"
 	"fmt"
+	"time"
+
 	"github.com/go-redis/redis/v8"
 	"github.com/go-redsync/redsync/v4"
 	"github.com/go-redsync/redsync/v4/redis/goredis/v8"
-	"time"
 )
 
 type ILockDb interface {
@@ -22,12 +23,12 @@ type LockDbRedis struct {
 }
 
 func NewLockDbRedis(redisDns string) (*LockDbRedis, error) {
-	redisDb, err := helpers.ExtractRedisDB(redisDns)
+	redisAddr, redisDb, err := helpers.ExtractRedisDetails(redisDns)
 	if err != nil {
 		return nil, fmt.Errorf("invalid redis db")
 	}
 	client := redis.NewClient(&redis.Options{
-		Addr: redisDns,
+		Addr: redisAddr,
 		DB:   redisDb,
 	})
 	system.RegisterRootCloser(client.Close)

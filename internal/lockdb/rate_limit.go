@@ -27,12 +27,12 @@ type OurRateLimiter struct {
 }
 
 func NewOurRateLimit(redisDns string) (*OurRateLimiter, error) {
-	redisDb, err := helpers.ExtractRedisDB(redisDns)
+	redisAddr, redisDb, err := helpers.ExtractRedisDetails(redisDns)
 	if err != nil {
 		return nil, fmt.Errorf("invalid redis db")
 	}
 	client := redis.NewClient(&redis.Options{
-		Addr: redisDns,
+		Addr: redisAddr,
 		DB:   redisDb,
 	})
 	system.RegisterRootCloser(client.Close)
