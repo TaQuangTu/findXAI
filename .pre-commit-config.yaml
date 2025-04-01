@@ -24,12 +24,7 @@ repos:
     rev: v1.0.0-rc.1 # Use the latest version
     hooks:
       - id: go-fmt
-      - id: go-imports
-      - id: go-lint
-      - id: go-vet
       - id: go-mod-tidy
-      # dont apply hooks for go files under pkg/protogen
-    exclude: 'pkg/protogen/.*'
 
   - repo: https://github.com/golangci/golangci-lint
     rev: v1.54.2 # Use the latest stable version
@@ -49,3 +44,11 @@ repos:
         entry: '^(build|ci|docs|feat|fix|perf|refactor|style|test|revert|hotfix|ops|chore|release)!?(\([a-z]+\))?: (?![A-Z])(?![a-z]+(ed|ing)\s).*$'
         stages: [commit-msg]
         args: [--negate]
+
+      - id: go-vet
+        name: go vet
+        description: Run go vet on packages
+        entry: bash -c 'cd "$(git rev-parse --show-toplevel)" && go vet ./...'
+        language: system
+        types: [go]
+        pass_filenames: false
