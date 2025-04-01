@@ -44,11 +44,12 @@ func (m *ApiKeyManager) GetKeyBucket(ctx context.Context, numberOfPartition int)
 	rows, err := m.db.QueryContext(ctx, `
 		SELECT
 				AVG(daily_queries) AS partition_avg,
-				(id % ?) AS partition_id
+				COUNT(*) AS record_count,
+				(id % $1) AS partition_id
 		FROM api_keys
 		GROUP BY partition_id
 		ORDER BY partition_avg DESC
-`, numberOfPartition)
+	`, numberOfPartition)
 	if err != nil {
 		return
 	}
@@ -120,7 +121,7 @@ func (m *ApiKeyManager) GetAvailableKey(ctx context.Context, bucketList KeyBucke
     		FROM api_keys
     		WHERE
         		is_active = TRUE
-        		AND id % ? = ?
+        		AND id % $1 = $2
         		AND daily_queries > 0
     		ORDER BY daily_queries DESC
     		FOR UPDATE SKIP LOCKED
@@ -135,7 +136,7 @@ func (m *ApiKeyManager) GetAvailableKey(ctx context.Context, bucketList KeyBucke
 	`, selectedBucket.NumberOfPartition, selectedBucket.PartitionId)
 
 	var availableKey AvailableKey
-	err = row.Scan(&availableKey.ApiKey, &availableKey.EngineId, availableKey.ResetedAt)
+	err = row.Scan(&availableKey.ApiKey, &availableKey.EngineId, &availableKey.ResetedAt)
 	if err != nil {
 		if err != sql.ErrNoRows {
 			return nil, err

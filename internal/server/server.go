@@ -39,11 +39,11 @@ func (s *SearchServer) Search(ctx context.Context, req *protogen.SearchRequest) 
 	// Number of bucket can be configured
 	bucketList, err := s.keyManager.GetKeyBucket(ctx, 5)
 	if err != nil {
-		return nil, status.Errorf(codes.ResourceExhausted, "error")
+		return nil, status.Error(codes.ResourceExhausted, err.Error())
 	}
 	availableKey, err := s.keyManager.GetAvailableKey(ctx, bucketList)
 	if err != nil {
-		return nil, status.Errorf(codes.ResourceExhausted, "no available API keys")
+		return nil, status.Error(codes.ResourceExhausted, err.Error())
 	}
 	defer func() {
 		var (
