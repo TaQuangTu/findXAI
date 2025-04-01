@@ -21,13 +21,13 @@ repos:
           - "--autofix"
           - "--indent=2"
   - repo: https://github.com/TekWizely/pre-commit-golang
-    rev: v1.0.0-rc.1 # Use the latest version
+    rev: v1.0.0-rc.1
     hooks:
       - id: go-fmt
       - id: go-mod-tidy
 
   - repo: https://github.com/golangci/golangci-lint
-    rev: v1.54.2 # Use the latest stable version
+    rev: v1.54.2
     hooks:
       - id: golangci-lint
         args: ["--enable=golint", "--enable=gofmt"]
