@@ -43,7 +43,7 @@ func NewSearchServer(conf *config.Config, lockDb lockdb.ILockDb, rateLimiter loc
 	system.PanicOnError(fmt.Errorf("ping db faild: %w", db.Ping()))
 	return &SearchServer{
 		googleClient: search.NewClient(),
-		keyManager:   search.NewApiKeyManager(db, lockDb, rateLimiter),
+		keyManager:   search.NewApiKeyManager(conf, db, lockDb, rateLimiter),
 		db:           db,
 		lockDb:       lockDb,
 		rateLimiter:  rateLimiter,
@@ -66,11 +66,8 @@ func (s *SearchServer) Search(ctx context.Context, req *protogen.SearchRequest) 
 			liberror.WrapStack(err, "search: tx begin: failed"),
 		)
 	}
-	defer func() {
-		if err != nil {
-			tx.Rollback()
-		}
-	}()
+	defer tx.Rollback()
+
 	availableKey, err := s.keyManager.GetAvailableKey(ctx)
 	if err != nil {
 		return nil, s.toError(err)
@@ -113,4 +110,76 @@ func (s *SearchServer) Search(ctx context.Context, req *protogen.SearchRequest) 
 		})
 	}
 	return response, nil
+}
+
+func (s *SearchServer) DeactivateKeys(ctx context.Context, req *protogen.DeactivateKeysRequest) (resModel *protogen.DeactivateKeysResponse, err error) {
+	if len(req.ApiKeys) <= 0 {
+		err = liberror.WrapStack(liberror.ErrorDataInvalid, "list key is empty")
+		return
+	}
+	if req.ForceDelete {
+		err = s.toError(s.keyManager.HardDeleteKeys(ctx, req.ApiKeys))
+		return
+	}
+	err = s.toError(s.keyManager.UpdateKeyActiveStatus(ctx, req.ApiKeys, false))
+	return
+}
+
+func (s *SearchServer) ActivateKeys(ctx context.Context, req *protogen.ActivateKeysRequest) (resModel *protogen.ActivateKeysResponse, err error) {
+	if len(req.ApiKeys) <= 0 {
+		err = liberror.WrapStack(liberror.ErrorDataInvalid, "list key is empty")
+		return
+	}
+	err = s.toError(s.keyManager.UpdateKeyActiveStatus(ctx, req.ApiKeys, true))
+	return
+}
+
+func (s *SearchServer) AddKeys(ctx context.Context, req *protogen.AddKeysRequest) (resModel *protogen.AddKeysResponse, err error) {
+	var (
+		sqlInput = make([][]any, 0)
+	)
+	for idx, item := range req.Data {
+		if item.ApiKey == "" || item.Name == "" || item.SearchEngineId == "" {
+			err = s.toError(liberror.
+				WrapStack(liberror.ErrorDataInvalid, "add key: invalid data").
+				WithField("item_idx", idx))
+			return
+		}
+		sqlInput = append(sqlInput, []any{item.Name, item.ApiKey, item.SearchEngineId})
+	}
+	err = s.toError(s.keyManager.AddKeys(ctx, sqlInput))
+	return
+}
+
+func (s *SearchServer) GetKeys(ctx context.Context, req *protogen.GetKeysRequest) (_ *protogen.GetKeysResponse, err error) {
+	if len(req.ApiKeys) == 0 {
+		err = s.toError(
+			liberror.WrapStack(liberror.ErrorDataInvalid, "list key is empty"))
+		return
+	}
+	keys, err := s.keyManager.GetKeys(ctx, req.ApiKeys)
+	if err != nil {
+		err = s.toError(err)
+		return
+	}
+	var (
+		resModel = &protogen.GetKeysResponse{
+			Results: make([]*protogen.KeyInfo, len(keys)),
+		}
+	)
+	for idx, key := range keys {
+		resModel.Results[idx] = &protogen.KeyInfo{
+			Id:             key.Id,
+			Name:           key.Name,
+			ApiKey:         key.ApiKey,
+			SearchEngineId: key.SearchEngineId,
+			IsActive:       key.IsActive,
+			DailyQueries:   key.DailyQueries,
+			StatusCode:     key.StatusCode,
+			ErrorMsg:       key.ErrorMsg,
+			CreatedAt:      key.CreatedAt.Format(time.RFC3339),
+			UpdatedAt:      key.UpdatedAt.Format(time.RFC3339),
+		}
+	}
+	return resModel, nil
 }

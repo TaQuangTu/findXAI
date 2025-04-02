@@ -6,6 +6,10 @@ option go_package = "pkg/protogen";
 
 service SearchService {
   rpc Search(SearchRequest) returns (SearchResponse);
+  rpc DeactivateKeys(DeactivateKeysRequest) returns (DeactivateKeysResponse);
+  rpc ActivateKeys(ActivateKeysRequest) returns (ActivateKeysResponse);
+  rpc AddKeys(AddKeysRequest) returns (AddKeysResponse);
+  rpc GetKeys(GetKeysRequest) returns (GetKeysResponse);
 }
 
 message SearchRequest {
@@ -25,4 +29,47 @@ message SearchResult {
 
 message SearchResponse {
   repeated SearchResult results = 1;
+}
+
+message DeactivateKeysRequest {
+  repeated string api_keys = 1;
+  bool force_delete = 2;
+}
+
+message DeactivateKeysResponse {
+}
+
+message ActivateKeysRequest {
+  repeated string api_keys = 1;
+}
+
+message ActivateKeysResponse {
+}
+
+message KeyInfo {
+  int64 id = 1;
+  string name = 2;
+  string api_key = 3;
+  string search_engine_id = 4;
+  bool is_active = 5;
+  int32 daily_queries = 6;
+  int32 status_code = 7;
+  string error_msg = 8;
+  string created_at = 9;
+  string updated_at = 10;
+}
+
+message AddKeysRequest {
+  repeated KeyInfo data = 1;
+}
+
+message AddKeysResponse {
+}
+
+message GetKeysRequest {
+  repeated string api_keys = 1;
+}
+
+message GetKeysResponse {
+  repeated KeyInfo results = 1;
 }

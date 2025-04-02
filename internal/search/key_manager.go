@@ -3,26 +3,32 @@ package search
 import (
 	"context"
 	"database/sql"
+	"findx/config"
 	"findx/internal/liberror"
 	"findx/internal/lockdb"
 	"fmt"
 	"time"
 
+	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 
 	"github.com/go-redis/redis_rate/v9"
-	_ "github.com/lib/pq"
 )
 
 type ApiKeyManager struct {
 	db          *sql.DB
 	lockDb      lockdb.ILockDb
 	rateLimiter lockdb.RateLimiter
+
+	conf *config.Config
 }
 
-func NewApiKeyManager(db *sql.DB, lockDb lockdb.ILockDb, rateLimiter lockdb.RateLimiter) *ApiKeyManager {
-
-	return &ApiKeyManager{db: db, lockDb: lockDb, rateLimiter: rateLimiter}
+func NewApiKeyManager(conf *config.Config, db *sql.DB, lockDb lockdb.ILockDb, rateLimiter lockdb.RateLimiter) *ApiKeyManager {
+	return &ApiKeyManager{
+		conf:        conf,
+		db:          db,
+		lockDb:      lockDb,
+		rateLimiter: rateLimiter}
 }
 
 func (m *ApiKeyManager) GetKeyBucket(ctx context.Context, numberOfPartition int) (_ KeyBucketList, err error) {
@@ -71,7 +77,7 @@ func (m *ApiKeyManager) GetKeyBucket(ctx context.Context, numberOfPartition int)
 }
 
 func (m *ApiKeyManager) GetAvailableKey(ctx context.Context) (_ *AvailableKey, err error) {
-	bucketList, err := m.GetKeyBucket(ctx, 3)
+	bucketList, err := m.GetKeyBucket(ctx, m.conf.APP_KEY_BUCKET)
 	if err != nil {
 		return
 	}
@@ -116,7 +122,6 @@ func (m *ApiKeyManager) GetAvailableKey(ctx context.Context) (_ *AvailableKey, e
         		is_active = TRUE
         		AND id % $1 = $2
         		AND daily_queries > 0
-						AND status_code BETWEEN 200 AND 299
     		ORDER BY daily_queries DESC
     		FOR UPDATE SKIP LOCKED
     		LIMIT 1
@@ -154,11 +159,107 @@ func (m *ApiKeyManager) ResetDailyCounts(limit int) {
 func (m *ApiKeyManager) UpdateKeyStatus(ctx context.Context, apiKey string, status int, msg string) (_ error) {
 	_, err := m.db.Exec(`
 		UPDATE api_keys
-			SET status_code = $1, error_msg = $2
+			SET status_code = $1, error_msg = $2, updated_at = NOW()
 		WHERE api_key = $3
 	`, &status, &msg, &apiKey)
 	if err != nil {
 		err = liberror.WrapStack(err, "key status: update failed")
 	}
 	return err
+}
+
+func (m *ApiKeyManager) UpdateKeyActiveStatus(ctx context.Context, apiKeys []string, isActivate bool) (_ error) {
+	_, err := m.db.Exec(`
+		UPDATE api_keys
+			SET is_active = $1
+		WHERE api_key = ANY($2::text[])
+	`, isActivate, pq.Array(apiKeys))
+	if err != nil {
+		err = liberror.WrapStack(err, "key active status: update faield").
+			WithFields(liberror.AdditionalData{
+				"api_keys":   apiKeys,
+				"isActivate": isActivate,
+			})
+	}
+	return err
+}
+
+func (m *ApiKeyManager) HardDeleteKeys(ctx context.Context, apiKeys []string) (_ error) {
+	_, err := m.db.Exec(`
+		DELETE FROM api_keys
+		WHERE api_key = ANY($1::text[])
+	`, pq.Array(apiKeys))
+	if err != nil {
+		err = liberror.WrapStack(err, "api keys: hard delete faield").
+			WithFields(liberror.AdditionalData{
+				"api_keys": apiKeys,
+			})
+	}
+	return err
+}
+
+func (m *ApiKeyManager) GetKeys(ctx context.Context, apiKeys []string) (keys []Key, err error) {
+	rows, err := m.db.QueryContext(ctx, `
+			SELECT
+				id,
+				name,
+				api_key,
+				search_engine_id,
+				is_active,
+				daily_queries,
+				status_code,
+				error_msg,
+				created_at,
+				updated_at
+			FROM api_keys
+			WHERE api_key = ANY($1::text[])
+		`, pq.Array(apiKeys))
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			key Key
+		)
+		err = rows.Scan(&key.Id, &key.Name, &key.ApiKey, &key.IsActive, &key.DailyQueries, &key.StatusCode, &key.ErrorMsg, &key.CreatedAt, &key.UpdatedAt)
+		if err != nil {
+			err = liberror.WrapStack(err, "get key: scan data failed")
+			return
+		}
+		keys = append(keys, key)
+	}
+	return keys, nil
+}
+
+func (m *ApiKeyManager) AddKeys(ctx context.Context, data [][]any) (err error) {
+	tx, err := m.db.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		err = liberror.WrapStack(err, "add key: begin tx failed")
+		return
+	}
+	defer tx.Rollback()
+
+	stmt, err := tx.Prepare(`
+		INSERT INTO api_keys (name, api_key, search_engine_id)
+			VALUES ($1, $2, $3)
+	`)
+	if err != nil {
+		err = liberror.WrapStack(err, "add key: preapre stmt failed")
+		return
+	}
+	defer stmt.Close()
+
+	for _, row := range data {
+		_, err = stmt.Exec(row...)
+		if err != nil {
+			_ = tx.Rollback()
+			err = liberror.WrapStack(err, "add key: exec failed").
+				WithField("data", row)
+			return
+		}
+	}
+	err = tx.Commit()
+	if err != nil {
+		err = liberror.WrapStack(err, "add key: commit tx failed")
+	}
+	return
 }

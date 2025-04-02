@@ -10,6 +10,8 @@ type Config struct {
 	POSTGRES_DSN           string `env:"POSTGRES_DSN"`
 	REDIS_LOCKDB_DSN       string `env:"REDIS_LOCKDB_DSN"`
 	REDIS_RATE_LIMITDB_DSN string `env:"REDIS_RATE_LIMITDB_DSN"`
+
+	APP_KEY_BUCKET int `env:"APP_KEY_BUCKET"`
 }
 
 func NewConfig() *Config {

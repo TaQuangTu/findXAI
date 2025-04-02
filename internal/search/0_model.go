@@ -29,4 +29,17 @@ type (
 		ApiKey    string
 		EngineId  string
 	}
+
+	Key struct {
+		Id             int64
+		Name           string
+		ApiKey         string
+		SearchEngineId string
+		IsActive       bool
+		DailyQueries   int32
+		StatusCode     int32
+		ErrorMsg       string
+		CreatedAt      time.Time
+		UpdatedAt      time.Time
+	}
 )
