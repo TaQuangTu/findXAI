@@ -6,7 +6,6 @@ option go_package = "pkg/protogen";
 
 service SearchService {
   rpc Search(SearchRequest) returns (SearchResponse);
-  rpc GoogleSearchParam(GoogleSearchParamRequest) returns (GoogleSearchParamResponse);
 }
 
 message SearchRequest {
@@ -26,17 +25,4 @@ message SearchResult {
 
 message SearchResponse {
   repeated SearchResult results = 1;
-}
-
-message GoogleSearchParam {
-  string param = 1;
-  string type = 2;
-  string description = 3;
-}
-
-message GoogleSearchParamResponse {
-  repeated GoogleSearchParam results = 1;
-}
-
-message GoogleSearchParamRequest {
 }

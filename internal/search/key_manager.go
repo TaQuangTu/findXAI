@@ -3,8 +3,8 @@ package search
 import (
 	"context"
 	"database/sql"
+	"findx/internal/liberror"
 	"findx/internal/lockdb"
-	"findx/internal/system"
 	"fmt"
 	"time"
 
@@ -20,23 +20,7 @@ type ApiKeyManager struct {
 	rateLimiter lockdb.RateLimiter
 }
 
-func NewApiKeyManager(dsn string, lockDb lockdb.ILockDb, rateLimiter lockdb.RateLimiter) *ApiKeyManager {
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		fmt.Println("failed to connect to database: %w", err)
-		panic(err)
-	}
-	system.RegisterRootCloser(db.Close)
-
-	// Configure connection pool
-	db.SetMaxOpenConns(20)
-	db.SetMaxIdleConns(20)
-	db.SetConnMaxLifetime(5 * time.Minute)
-
-	// Verify connection
-	if err := db.Ping(); err != nil {
-		panic(fmt.Errorf("failed to ping database: %w", err))
-	}
+func NewApiKeyManager(db *sql.DB, lockDb lockdb.ILockDb, rateLimiter lockdb.RateLimiter) *ApiKeyManager {
 
 	return &ApiKeyManager{db: db, lockDb: lockDb, rateLimiter: rateLimiter}
 }
@@ -52,6 +36,7 @@ func (m *ApiKeyManager) GetKeyBucket(ctx context.Context, numberOfPartition int)
 		ORDER BY partition_avg DESC
 	`, numberOfPartition)
 	if err != nil {
+		err = liberror.WrapStack(err, "get bucket: query failed")
 		return
 	}
 	defer rows.Close()
@@ -67,6 +52,7 @@ func (m *ApiKeyManager) GetKeyBucket(ctx context.Context, numberOfPartition int)
 		)
 		err = rows.Scan(&partitionAvg, &numberOfRecords, &partitionId)
 		if err != nil {
+			err = liberror.WrapStack(err, "get bucket: scan failed")
 			return
 		}
 		bucketList = append(bucketList, KeyBucket{
@@ -76,7 +62,7 @@ func (m *ApiKeyManager) GetKeyBucket(ctx context.Context, numberOfPartition int)
 		})
 	}
 	if len(bucketList) <= 0 {
-		err = fmt.Errorf("invalid param")
+		err = liberror.WrapStack(liberror.ErrorNotFound, "get bucket: no bucket found")
 		return
 	}
 	// First bucket will always has highest capacity
@@ -84,7 +70,11 @@ func (m *ApiKeyManager) GetKeyBucket(ctx context.Context, numberOfPartition int)
 	return bucketList, err
 }
 
-func (m *ApiKeyManager) GetAvailableKey(ctx context.Context, bucketList KeyBucketList) (_ *AvailableKey, err error) {
+func (m *ApiKeyManager) GetAvailableKey(ctx context.Context) (_ *AvailableKey, err error) {
+	bucketList, err := m.GetKeyBucket(ctx, 3)
+	if err != nil {
+		return
+	}
 	var (
 		selectedBucket KeyBucket
 	)
@@ -102,6 +92,7 @@ func (m *ApiKeyManager) GetAvailableKey(ctx context.Context, bucketList KeyBucke
 			Period: time.Second,
 		})
 		if err != nil {
+			err = liberror.WrapStack(err, "get available key: rate lock failed")
 			return nil, err
 		}
 		if result.Allowed > 0 {
@@ -113,7 +104,8 @@ func (m *ApiKeyManager) GetAvailableKey(ctx context.Context, bucketList KeyBucke
 	}
 
 	if selectedBucket.PartitionAvg <= 0 {
-		return nil, fmt.Errorf("out of limit")
+		err = liberror.WrapStack(liberror.ErrorLimitReached, "get available key: out of capacity")
+		return
 	}
 	// Find the first available key that hasn't reached its daily limit in highest capacity bucket
 	row := m.db.QueryRowContext(ctx, `
@@ -124,6 +116,7 @@ func (m *ApiKeyManager) GetAvailableKey(ctx context.Context, bucketList KeyBucke
         		is_active = TRUE
         		AND id % $1 = $2
         		AND daily_queries > 0
+						AND status_code BETWEEN 200 AND 299
     		ORDER BY daily_queries DESC
     		FOR UPDATE SKIP LOCKED
     		LIMIT 1
@@ -138,22 +131,34 @@ func (m *ApiKeyManager) GetAvailableKey(ctx context.Context, bucketList KeyBucke
 
 	var availableKey AvailableKey
 	err = row.Scan(&availableKey.ApiKey, &availableKey.EngineId, &availableKey.ResetedAt)
-	if err != nil {
-		if err != sql.ErrNoRows {
-			return nil, err
-		}
-		return nil, fmt.Errorf("out of limit")
+	if err == nil {
+		return &availableKey, nil
 	}
-
-	return &availableKey, nil
+	if err == sql.ErrNoRows {
+		err = liberror.ErrorLimitReached
+	}
+	err = liberror.WrapStack(err, "get available key: get key failed")
+	return
 }
 
-func (m *ApiKeyManager) ResetDailyCounts(limit int, resetedAt time.Time) {
+func (m *ApiKeyManager) ResetDailyCounts(limit int) {
 	// Run this at midnight UTC
 	_, _ = m.db.Exec(`
 		UPDATE api_keys
 			SET daily_queries = $1 , reseted_at = NOW()
 		WHERE
-			reseted_at::DATE < $2
-	`, limit, resetedAt.Format("2006-01-02"))
+			reseted_at::DATE < NOW()::DATE
+	`, limit)
+}
+
+func (m *ApiKeyManager) UpdateKeyStatus(ctx context.Context, apiKey string, status int, msg string) (_ error) {
+	_, err := m.db.Exec(`
+		UPDATE api_keys
+			SET status_code = $1, error_msg = $2
+		WHERE api_key = $3
+	`, &status, &msg, &apiKey)
+	if err != nil {
+		err = liberror.WrapStack(err, "key status: update failed")
+	}
+	return err
 }
