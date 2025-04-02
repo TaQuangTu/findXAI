@@ -6,8 +6,10 @@ import (
 	"findx/internal/lockdb"
 	"findx/internal/system"
 	"fmt"
-	_ "github.com/lib/pq"
+	"log"
 	"time"
+
+	_ "github.com/lib/pq"
 
 	"github.com/go-redis/redis_rate/v9"
 	_ "github.com/lib/pq"
@@ -147,12 +149,17 @@ func (m *ApiKeyManager) GetAvailableKey(ctx context.Context, bucketList KeyBucke
 	return &availableKey, nil
 }
 
-func (m *ApiKeyManager) ResetDailyCounts(limit int, updatedAt time.Time) {
+func (m *ApiKeyManager) ResetDailyCounts(limit int) {
 	// Run this at midnight UTC
-	_, _ = m.db.Exec(`
+	res, err := m.db.Exec(`
 		UPDATE api_keys
-			SET daily_queries = ? , reseted_at = NOW()
+			SET daily_queries = $1 , reseted_at = NOW()
 		WHERE
-			reseted_at::DATE < ?
-	`, limit, updatedAt.Format("2006-01-02"))
+			reseted_at::DATE < CURRENT_DATE
+	`, limit)
+	if err != nil {
+		log.Println("[WARNING]: Failed to reset daily counts", err)
+	}
+	log.Println("[SUCCESS]: Reset daily counts")
+	log.Println(res.RowsAffected())
 }
