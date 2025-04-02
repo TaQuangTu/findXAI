@@ -209,6 +209,146 @@ func (x *SearchResponse) GetResults() []*SearchResult {
 	return nil
 }
 
+type GoogleSearchParam struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Param         string                 `protobuf:"bytes,1,opt,name=param,proto3" json:"param,omitempty"`
+	Type          string                 `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GoogleSearchParam) Reset() {
+	*x = GoogleSearchParam{}
+	mi := &file_api_search_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GoogleSearchParam) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GoogleSearchParam) ProtoMessage() {}
+
+func (x *GoogleSearchParam) ProtoReflect() protoreflect.Message {
+	mi := &file_api_search_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GoogleSearchParam.ProtoReflect.Descriptor instead.
+func (*GoogleSearchParam) Descriptor() ([]byte, []int) {
+	return file_api_search_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GoogleSearchParam) GetParam() string {
+	if x != nil {
+		return x.Param
+	}
+	return ""
+}
+
+func (x *GoogleSearchParam) GetType() string {
+	if x != nil {
+		return x.Type
+	}
+	return ""
+}
+
+func (x *GoogleSearchParam) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+type GoogleSearchParamResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Results       []*GoogleSearchParam   `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GoogleSearchParamResponse) Reset() {
+	*x = GoogleSearchParamResponse{}
+	mi := &file_api_search_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GoogleSearchParamResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GoogleSearchParamResponse) ProtoMessage() {}
+
+func (x *GoogleSearchParamResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_search_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GoogleSearchParamResponse.ProtoReflect.Descriptor instead.
+func (*GoogleSearchParamResponse) Descriptor() ([]byte, []int) {
+	return file_api_search_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *GoogleSearchParamResponse) GetResults() []*GoogleSearchParam {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+type GoogleSearchParamRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GoogleSearchParamRequest) Reset() {
+	*x = GoogleSearchParamRequest{}
+	mi := &file_api_search_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GoogleSearchParamRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GoogleSearchParamRequest) ProtoMessage() {}
+
+func (x *GoogleSearchParamRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_search_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GoogleSearchParamRequest.ProtoReflect.Descriptor instead.
+func (*GoogleSearchParamRequest) Descriptor() ([]byte, []int) {
+	return file_api_search_proto_rawDescGZIP(), []int{5}
+}
+
 var File_api_search_proto protoreflect.FileDescriptor
 
 const file_api_search_proto_rawDesc = "" +
@@ -228,9 +368,17 @@ const file_api_search_proto_rawDesc = "" +
 	"\x04link\x18\x02 \x01(\tR\x04link\x12\x18\n" +
 	"\asnippet\x18\x03 \x01(\tR\asnippet\"J\n" +
 	"\x0eSearchResponse\x128\n" +
-	"\aresults\x18\x01 \x03(\v2\x1e.google.search.v1.SearchResultR\aresults2\\\n" +
+	"\aresults\x18\x01 \x03(\v2\x1e.google.search.v1.SearchResultR\aresults\"_\n" +
+	"\x11GoogleSearchParam\x12\x14\n" +
+	"\x05param\x18\x01 \x01(\tR\x05param\x12\x12\n" +
+	"\x04type\x18\x02 \x01(\tR\x04type\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\"Z\n" +
+	"\x19GoogleSearchParamResponse\x12=\n" +
+	"\aresults\x18\x01 \x03(\v2#.google.search.v1.GoogleSearchParamR\aresults\"\x1a\n" +
+	"\x18GoogleSearchParamRequest2\xca\x01\n" +
 	"\rSearchService\x12K\n" +
-	"\x06Search\x12\x1f.google.search.v1.SearchRequest\x1a .google.search.v1.SearchResponseB\x0eZ\fpkg/protogenb\x06proto3"
+	"\x06Search\x12\x1f.google.search.v1.SearchRequest\x1a .google.search.v1.SearchResponse\x12l\n" +
+	"\x11GoogleSearchParam\x12*.google.search.v1.GoogleSearchParamRequest\x1a+.google.search.v1.GoogleSearchParamResponseB\x0eZ\fpkg/protogenb\x06proto3"
 
 var (
 	file_api_search_proto_rawDescOnce sync.Once
@@ -244,21 +392,27 @@ func file_api_search_proto_rawDescGZIP() []byte {
 	return file_api_search_proto_rawDescData
 }
 
-var file_api_search_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_api_search_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_api_search_proto_goTypes = []any{
-	(*SearchRequest)(nil),  // 0: google.search.v1.SearchRequest
-	(*SearchResult)(nil),   // 1: google.search.v1.SearchResult
-	(*SearchResponse)(nil), // 2: google.search.v1.SearchResponse
+	(*SearchRequest)(nil),             // 0: google.search.v1.SearchRequest
+	(*SearchResult)(nil),              // 1: google.search.v1.SearchResult
+	(*SearchResponse)(nil),            // 2: google.search.v1.SearchResponse
+	(*GoogleSearchParam)(nil),         // 3: google.search.v1.GoogleSearchParam
+	(*GoogleSearchParamResponse)(nil), // 4: google.search.v1.GoogleSearchParamResponse
+	(*GoogleSearchParamRequest)(nil),  // 5: google.search.v1.GoogleSearchParamRequest
 }
 var file_api_search_proto_depIdxs = []int32{
 	1, // 0: google.search.v1.SearchResponse.results:type_name -> google.search.v1.SearchResult
-	0, // 1: google.search.v1.SearchService.Search:input_type -> google.search.v1.SearchRequest
-	2, // 2: google.search.v1.SearchService.Search:output_type -> google.search.v1.SearchResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	3, // 1: google.search.v1.GoogleSearchParamResponse.results:type_name -> google.search.v1.GoogleSearchParam
+	0, // 2: google.search.v1.SearchService.Search:input_type -> google.search.v1.SearchRequest
+	5, // 3: google.search.v1.SearchService.GoogleSearchParam:input_type -> google.search.v1.GoogleSearchParamRequest
+	2, // 4: google.search.v1.SearchService.Search:output_type -> google.search.v1.SearchResponse
+	4, // 5: google.search.v1.SearchService.GoogleSearchParam:output_type -> google.search.v1.GoogleSearchParamResponse
+	4, // [4:6] is the sub-list for method output_type
+	2, // [2:4] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_api_search_proto_init() }
@@ -272,7 +426,7 @@ func file_api_search_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_search_proto_rawDesc), len(file_api_search_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
