@@ -54,7 +54,7 @@ func (s *SearchServer) toError(err error) error {
 }
 
 func (s *SearchServer) Search(ctx context.Context, req *protogen.SearchRequest) (*protogen.SearchResponse, error) {
-	if err := helpers.ValidateSearchRequest(req); err != nil {
+	if err := ValidateSearchRequest(req); err != nil {
 		return nil, s.toError(
 			liberror.WrapStack(err, "search: user use invalid parameter"),
 		)
