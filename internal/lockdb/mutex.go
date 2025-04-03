@@ -8,7 +8,6 @@ import (
 
 type OurMutex struct {
 	*redsync.Mutex
-	ctx context.Context
 }
 
 func NewMutex(mux *redsync.Mutex) *OurMutex {
@@ -22,7 +21,6 @@ func (m *OurMutex) TryLockContext(ctx context.Context) (err error) {
 	if err != nil {
 		return
 	}
-	m.ctx = ctx
 	return nil
 }
 
@@ -31,7 +29,6 @@ func (m *OurMutex) LockContext(ctx context.Context) (err error) {
 	if err != nil {
 		return
 	}
-	m.ctx = ctx
 	return nil
 }
 
@@ -43,6 +40,6 @@ func (m *OurMutex) UnlockContext(ctx context.Context) (ok bool, err error) {
 	return ok, nil
 }
 
-func (m *OurMutex) Unlock() (bool, error) {
-	return m.UnlockContext(m.ctx)
+func (m *OurMutex) Unlock(ctx context.Context) (bool, error) {
+	return m.UnlockContext(ctx)
 }
