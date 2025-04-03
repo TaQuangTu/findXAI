@@ -31,15 +31,12 @@ func getUTCMinus7Location() *time.Location {
 func sleepUntilNextReset(utcMinus7 *time.Location) {
 	// Calculate time until next midnight in UTC-7
 	now := time.Now().In(utcMinus7)
-	nextMidnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, utcMinus7)
-	if now.After(nextMidnight) {
-		// If we've already passed midnight today, schedule for tomorrow
-		nextMidnight = nextMidnight.Add(24 * time.Hour)
-	}
+	thisMidnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, utcMinus7)
+	nextMidnight := thisMidnight.Add(24 * time.Hour)
 
 	// Calculate duration until next reset
 	sleepDuration := nextMidnight.Sub(now)
-	log.Printf("Scheduled next daily count reset in %v (at %v UTC-7)", sleepDuration, nextMidnight)
+	log.Printf("Scheduled next daily count reset in %v (at %v UTC-7)", sleepDuration, thisMidnight)
 
 	// Sleep until the next reset time
 	time.Sleep(sleepDuration)
