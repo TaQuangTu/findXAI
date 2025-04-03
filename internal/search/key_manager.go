@@ -162,20 +162,20 @@ func (m *ApiKeyManager) ResetDailyCounts(limit int) {
 	log.Println("[SUCCESS]: Reset daily counts for ", affectedRows, " keys")
 }
 
-func (m *ApiKeyManager) UpdateKeyStatus(ctx context.Context, apiKey string, status int, msg string) (_ error) {
-	_, err := m.db.Exec(`
-		UPDATE api_keys
-			SET status_code = $1, error_msg = $2, updated_at = NOW()
-		WHERE api_key = $3
-	`, &status, &msg, &apiKey)
+func (m *ApiKeyManager) UpdateKeyStatus(ctx context.Context, tx *sql.Tx, apiKey string, status int, msg string) (_ error) {
+	_, err := tx.Exec(`
+        UPDATE api_keys
+            SET status_code = $1, error_msg = $2, updated_at = NOW()
+        WHERE api_key = $3
+    `, &status, &msg, &apiKey)
 	if err != nil {
 		err = liberror.WrapStack(err, "key status: update failed")
 	}
 	return err
 }
 
-func (m *ApiKeyManager) UpdateKeyActiveStatus(ctx context.Context, apiKeys []string, isActivate bool) (_ error) {
-	_, err := m.db.Exec(`
+func (m *ApiKeyManager) UpdateKeyActiveStatus(ctx context.Context, tx *sql.Tx, apiKeys []string, isActivate bool) (_ error) {
+	_, err := tx.Exec(`
 		UPDATE api_keys
 			SET is_active = $1
 		WHERE api_key = ANY($2::text[])
@@ -190,8 +190,8 @@ func (m *ApiKeyManager) UpdateKeyActiveStatus(ctx context.Context, apiKeys []str
 	return err
 }
 
-func (m *ApiKeyManager) HardDeleteKeys(ctx context.Context, apiKeys []string) (_ error) {
-	_, err := m.db.Exec(`
+func (m *ApiKeyManager) HardDeleteKeys(ctx context.Context, tx *sql.Tx, apiKeys []string) (_ error) {
+	_, err := tx.Exec(`
 		DELETE FROM api_keys
 		WHERE api_key = ANY($1::text[])
 	`, pq.Array(apiKeys))

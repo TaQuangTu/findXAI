@@ -28,10 +28,7 @@ type SearchServer struct {
 
 func NewSearchServer(conf *config.Config, lockDb lockdb.ILockDb, rateLimiter lockdb.RateLimiter) *SearchServer {
 	db, err := sql.Open("postgres", conf.POSTGRES_DSN)
-	if err != nil {
-		fmt.Println("failed to connect to database: %w", err)
-		panic(err)
-	}
+	system.PanicOnError(err)
 	system.RegisterRootCloser(db.Close)
 
 	// Configure connection pool
@@ -40,8 +37,10 @@ func NewSearchServer(conf *config.Config, lockDb lockdb.ILockDb, rateLimiter loc
 	db.SetConnMaxLifetime(5 * time.Minute)
 
 	// Verify connection
-	system.PanicOnError(fmt.Errorf("ping db faild: %w", db.Ping()))
+	err = db.Ping()
+	system.PanicOnError(err)
 	return &SearchServer{
+		db:           db,
 		googleClient: search.NewClient(),
 		KeyManager:   search.NewApiKeyManager(conf, db, lockDb, rateLimiter),
 		lockDb:       lockDb,
@@ -82,7 +81,7 @@ func (s *SearchServer) Search(ctx context.Context, req *protogen.SearchRequest) 
 	if searchErr != nil {
 		msg = searchErr.Error()
 	}
-	err = s.KeyManager.UpdateKeyStatus(ctx, availableKey.ApiKey, statusCode, msg)
+	err = s.KeyManager.UpdateKeyStatus(ctx, tx, availableKey.ApiKey, statusCode, msg)
 	if err != nil {
 		return nil, s.toError(err)
 	}
@@ -112,24 +111,34 @@ func (s *SearchServer) Search(ctx context.Context, req *protogen.SearchRequest) 
 }
 
 func (s *SearchServer) DeactivateKeys(ctx context.Context, req *protogen.DeactivateKeysRequest) (resModel *protogen.DeactivateKeysResponse, err error) {
+	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		err = liberror.WrapStack(err, "deactivate key: begin tx failed")
+		return
+	}
 	if len(req.ApiKeys) <= 0 {
 		err = liberror.WrapStack(liberror.ErrorDataInvalid, "list key is empty")
 		return
 	}
 	if req.ForceDelete {
-		err = s.toError(s.KeyManager.HardDeleteKeys(ctx, req.ApiKeys))
+		err = s.toError(s.KeyManager.HardDeleteKeys(ctx, tx, req.ApiKeys))
 		return
 	}
-	err = s.toError(s.KeyManager.UpdateKeyActiveStatus(ctx, req.ApiKeys, false))
+	err = s.toError(s.KeyManager.UpdateKeyActiveStatus(ctx, tx, req.ApiKeys, false))
 	return
 }
 
 func (s *SearchServer) ActivateKeys(ctx context.Context, req *protogen.ActivateKeysRequest) (resModel *protogen.ActivateKeysResponse, err error) {
+	tx, err := s.db.BeginTx(ctx, &sql.TxOptions{})
+	if err != nil {
+		err = liberror.WrapStack(err, "activate key: begin tx failed")
+		return
+	}
 	if len(req.ApiKeys) <= 0 {
 		err = liberror.WrapStack(liberror.ErrorDataInvalid, "list key is empty")
 		return
 	}
-	err = s.toError(s.KeyManager.UpdateKeyActiveStatus(ctx, req.ApiKeys, true))
+	err = s.toError(s.KeyManager.UpdateKeyActiveStatus(ctx, tx, req.ApiKeys, true))
 	return
 }
 
