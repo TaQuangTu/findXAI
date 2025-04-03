@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"findx/config"
-	"findx/internal/helpers"
 	"findx/internal/liberror"
 	"findx/internal/lockdb"
 	"findx/internal/search"
@@ -78,7 +77,7 @@ func (s *SearchServer) Search(ctx context.Context, req *protogen.SearchRequest) 
 	}
 
 	// convert req to map[string]string
-	params := helpers.ProtoMessageToMap(req)
+	params := ProtoMessageToMap(req)
 
 	results, statusCode, searchErr := s.googleClient.Search(ctx, availableKey.ApiKey, availableKey.EngineId, params)
 
