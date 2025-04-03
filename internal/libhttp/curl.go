@@ -78,8 +78,8 @@ func (c *HttpClient) Request(ctx context.Context, option RequestOption, out any)
 		}
 		if err = json.Unmarshal(body, out); err != nil {
 			err = fmt.Errorf("parse dst failed: %w", err)
-			return
 		}
+		return
 	}
 	length := 1024
 	if len(body) < length {
