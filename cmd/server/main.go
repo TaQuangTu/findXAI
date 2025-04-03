@@ -24,7 +24,7 @@ func RegisterRootCloser(closer func() error) {
 func main() {
 	cfg := config.NewConfig()
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", cfg.PORT))
+	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", cfg.PORT, cfg.PORT))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
