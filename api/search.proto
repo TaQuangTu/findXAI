@@ -13,12 +13,35 @@ service SearchService {
 }
 
 message SearchRequest {
-  string query = 1;
-  string language = 2;        // e.g., "en", "fr"
-  string country = 3;          // e.g., "us", "fr"
-  int32 num_results = 4;       // Number of results (1-10)
-  string start_date = 5;       // YYYY-MM-DD format
-  string end_date = 6;         // YYYY-MM-DD format
+  string c2coff = 1;
+  string cr = 2;
+  string date_restrict = 3;
+  string exact_terms = 4;
+  string exclude_terms = 5;
+  string file_type = 6;
+  string filter = 7;
+  string gl = 8;
+  string high_range = 9;
+  string hl = 10;
+  string hq = 11;
+  string img_color_type = 12;
+  string img_dominant_color = 13;
+  string img_size = 14;
+  string img_type = 15;
+  string language = 16;
+  string link_site = 17;
+  string low_range = 18;
+  string lr = 19;
+  int32 num = 20;
+  string or_terms = 21;
+  string q = 22;
+  string rights = 23;
+  string safe = 24;
+  string search_type = 25;
+  string site_search = 26;
+  string site_search_filter = 27;
+  string sort = 28;
+  int32 start = 29;
 }
 
 message SearchResult {

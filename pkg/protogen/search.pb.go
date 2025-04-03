@@ -22,15 +22,38 @@ const (
 )
 
 type SearchRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Query         string                 `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
-	Language      string                 `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"`                        // e.g., "en", "fr"
-	Country       string                 `protobuf:"bytes,3,opt,name=country,proto3" json:"country,omitempty"`                          // e.g., "us", "fr"
-	NumResults    int32                  `protobuf:"varint,4,opt,name=num_results,json=numResults,proto3" json:"num_results,omitempty"` // Number of results (1-10)
-	StartDate     string                 `protobuf:"bytes,5,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`     // YYYY-MM-DD format
-	EndDate       string                 `protobuf:"bytes,6,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`           // YYYY-MM-DD format
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	C2Coff           string                 `protobuf:"bytes,1,opt,name=c2coff,proto3" json:"c2coff,omitempty"`
+	Cr               string                 `protobuf:"bytes,2,opt,name=cr,proto3" json:"cr,omitempty"`
+	DateRestrict     string                 `protobuf:"bytes,3,opt,name=date_restrict,json=dateRestrict,proto3" json:"date_restrict,omitempty"`
+	ExactTerms       string                 `protobuf:"bytes,4,opt,name=exact_terms,json=exactTerms,proto3" json:"exact_terms,omitempty"`
+	ExcludeTerms     string                 `protobuf:"bytes,5,opt,name=exclude_terms,json=excludeTerms,proto3" json:"exclude_terms,omitempty"`
+	FileType         string                 `protobuf:"bytes,6,opt,name=file_type,json=fileType,proto3" json:"file_type,omitempty"`
+	Filter           string                 `protobuf:"bytes,7,opt,name=filter,proto3" json:"filter,omitempty"`
+	Gl               string                 `protobuf:"bytes,8,opt,name=gl,proto3" json:"gl,omitempty"`
+	HighRange        string                 `protobuf:"bytes,9,opt,name=high_range,json=highRange,proto3" json:"high_range,omitempty"`
+	Hl               string                 `protobuf:"bytes,10,opt,name=hl,proto3" json:"hl,omitempty"`
+	Hq               string                 `protobuf:"bytes,11,opt,name=hq,proto3" json:"hq,omitempty"`
+	ImgColorType     string                 `protobuf:"bytes,12,opt,name=img_color_type,json=imgColorType,proto3" json:"img_color_type,omitempty"`
+	ImgDominantColor string                 `protobuf:"bytes,13,opt,name=img_dominant_color,json=imgDominantColor,proto3" json:"img_dominant_color,omitempty"`
+	ImgSize          string                 `protobuf:"bytes,14,opt,name=img_size,json=imgSize,proto3" json:"img_size,omitempty"`
+	ImgType          string                 `protobuf:"bytes,15,opt,name=img_type,json=imgType,proto3" json:"img_type,omitempty"`
+	Language         string                 `protobuf:"bytes,16,opt,name=language,proto3" json:"language,omitempty"`
+	LinkSite         string                 `protobuf:"bytes,17,opt,name=link_site,json=linkSite,proto3" json:"link_site,omitempty"`
+	LowRange         string                 `protobuf:"bytes,18,opt,name=low_range,json=lowRange,proto3" json:"low_range,omitempty"`
+	Lr               string                 `protobuf:"bytes,19,opt,name=lr,proto3" json:"lr,omitempty"`
+	Num              int32                  `protobuf:"varint,20,opt,name=num,proto3" json:"num,omitempty"`
+	OrTerms          string                 `protobuf:"bytes,21,opt,name=or_terms,json=orTerms,proto3" json:"or_terms,omitempty"`
+	Q                string                 `protobuf:"bytes,22,opt,name=q,proto3" json:"q,omitempty"`
+	Rights           string                 `protobuf:"bytes,23,opt,name=rights,proto3" json:"rights,omitempty"`
+	Safe             string                 `protobuf:"bytes,24,opt,name=safe,proto3" json:"safe,omitempty"`
+	SearchType       string                 `protobuf:"bytes,25,opt,name=search_type,json=searchType,proto3" json:"search_type,omitempty"`
+	SiteSearch       string                 `protobuf:"bytes,26,opt,name=site_search,json=siteSearch,proto3" json:"site_search,omitempty"`
+	SiteSearchFilter string                 `protobuf:"bytes,27,opt,name=site_search_filter,json=siteSearchFilter,proto3" json:"site_search_filter,omitempty"`
+	Sort             string                 `protobuf:"bytes,28,opt,name=sort,proto3" json:"sort,omitempty"`
+	Start            int32                  `protobuf:"varint,29,opt,name=start,proto3" json:"start,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *SearchRequest) Reset() {
@@ -63,9 +86,107 @@ func (*SearchRequest) Descriptor() ([]byte, []int) {
 	return file_api_search_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *SearchRequest) GetQuery() string {
+func (x *SearchRequest) GetC2Coff() string {
 	if x != nil {
-		return x.Query
+		return x.C2Coff
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetCr() string {
+	if x != nil {
+		return x.Cr
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetDateRestrict() string {
+	if x != nil {
+		return x.DateRestrict
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetExactTerms() string {
+	if x != nil {
+		return x.ExactTerms
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetExcludeTerms() string {
+	if x != nil {
+		return x.ExcludeTerms
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetFileType() string {
+	if x != nil {
+		return x.FileType
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetGl() string {
+	if x != nil {
+		return x.Gl
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetHighRange() string {
+	if x != nil {
+		return x.HighRange
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetHl() string {
+	if x != nil {
+		return x.Hl
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetHq() string {
+	if x != nil {
+		return x.Hq
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetImgColorType() string {
+	if x != nil {
+		return x.ImgColorType
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetImgDominantColor() string {
+	if x != nil {
+		return x.ImgDominantColor
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetImgSize() string {
+	if x != nil {
+		return x.ImgSize
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetImgType() string {
+	if x != nil {
+		return x.ImgType
 	}
 	return ""
 }
@@ -77,32 +198,95 @@ func (x *SearchRequest) GetLanguage() string {
 	return ""
 }
 
-func (x *SearchRequest) GetCountry() string {
+func (x *SearchRequest) GetLinkSite() string {
 	if x != nil {
-		return x.Country
+		return x.LinkSite
 	}
 	return ""
 }
 
-func (x *SearchRequest) GetNumResults() int32 {
+func (x *SearchRequest) GetLowRange() string {
 	if x != nil {
-		return x.NumResults
+		return x.LowRange
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetLr() string {
+	if x != nil {
+		return x.Lr
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetNum() int32 {
+	if x != nil {
+		return x.Num
 	}
 	return 0
 }
 
-func (x *SearchRequest) GetStartDate() string {
+func (x *SearchRequest) GetOrTerms() string {
 	if x != nil {
-		return x.StartDate
+		return x.OrTerms
 	}
 	return ""
 }
 
-func (x *SearchRequest) GetEndDate() string {
+func (x *SearchRequest) GetQ() string {
 	if x != nil {
-		return x.EndDate
+		return x.Q
 	}
 	return ""
+}
+
+func (x *SearchRequest) GetRights() string {
+	if x != nil {
+		return x.Rights
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetSafe() string {
+	if x != nil {
+		return x.Safe
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetSearchType() string {
+	if x != nil {
+		return x.SearchType
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetSiteSearch() string {
+	if x != nil {
+		return x.SiteSearch
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetSiteSearchFilter() string {
+	if x != nil {
+		return x.SiteSearchFilter
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetSort() string {
+	if x != nil {
+		return x.Sort
+	}
+	return ""
+}
+
+func (x *SearchRequest) GetStart() int32 {
+	if x != nil {
+		return x.Start
+	}
+	return 0
 }
 
 type SearchResult struct {
@@ -665,16 +849,42 @@ var File_api_search_proto protoreflect.FileDescriptor
 
 const file_api_search_proto_rawDesc = "" +
 	"\n" +
-	"\x10api/search.proto\x12\x10google.search.v1\"\xb6\x01\n" +
-	"\rSearchRequest\x12\x14\n" +
-	"\x05query\x18\x01 \x01(\tR\x05query\x12\x1a\n" +
-	"\blanguage\x18\x02 \x01(\tR\blanguage\x12\x18\n" +
-	"\acountry\x18\x03 \x01(\tR\acountry\x12\x1f\n" +
-	"\vnum_results\x18\x04 \x01(\x05R\n" +
-	"numResults\x12\x1d\n" +
+	"\x10api/search.proto\x12\x10google.search.v1\"\x97\x06\n" +
+	"\rSearchRequest\x12\x16\n" +
+	"\x06c2coff\x18\x01 \x01(\tR\x06c2coff\x12\x0e\n" +
+	"\x02cr\x18\x02 \x01(\tR\x02cr\x12#\n" +
+	"\rdate_restrict\x18\x03 \x01(\tR\fdateRestrict\x12\x1f\n" +
+	"\vexact_terms\x18\x04 \x01(\tR\n" +
+	"exactTerms\x12#\n" +
+	"\rexclude_terms\x18\x05 \x01(\tR\fexcludeTerms\x12\x1b\n" +
+	"\tfile_type\x18\x06 \x01(\tR\bfileType\x12\x16\n" +
+	"\x06filter\x18\a \x01(\tR\x06filter\x12\x0e\n" +
+	"\x02gl\x18\b \x01(\tR\x02gl\x12\x1d\n" +
 	"\n" +
-	"start_date\x18\x05 \x01(\tR\tstartDate\x12\x19\n" +
-	"\bend_date\x18\x06 \x01(\tR\aendDate\"R\n" +
+	"high_range\x18\t \x01(\tR\thighRange\x12\x0e\n" +
+	"\x02hl\x18\n" +
+	" \x01(\tR\x02hl\x12\x0e\n" +
+	"\x02hq\x18\v \x01(\tR\x02hq\x12$\n" +
+	"\x0eimg_color_type\x18\f \x01(\tR\fimgColorType\x12,\n" +
+	"\x12img_dominant_color\x18\r \x01(\tR\x10imgDominantColor\x12\x19\n" +
+	"\bimg_size\x18\x0e \x01(\tR\aimgSize\x12\x19\n" +
+	"\bimg_type\x18\x0f \x01(\tR\aimgType\x12\x1a\n" +
+	"\blanguage\x18\x10 \x01(\tR\blanguage\x12\x1b\n" +
+	"\tlink_site\x18\x11 \x01(\tR\blinkSite\x12\x1b\n" +
+	"\tlow_range\x18\x12 \x01(\tR\blowRange\x12\x0e\n" +
+	"\x02lr\x18\x13 \x01(\tR\x02lr\x12\x10\n" +
+	"\x03num\x18\x14 \x01(\x05R\x03num\x12\x19\n" +
+	"\bor_terms\x18\x15 \x01(\tR\aorTerms\x12\f\n" +
+	"\x01q\x18\x16 \x01(\tR\x01q\x12\x16\n" +
+	"\x06rights\x18\x17 \x01(\tR\x06rights\x12\x12\n" +
+	"\x04safe\x18\x18 \x01(\tR\x04safe\x12\x1f\n" +
+	"\vsearch_type\x18\x19 \x01(\tR\n" +
+	"searchType\x12\x1f\n" +
+	"\vsite_search\x18\x1a \x01(\tR\n" +
+	"siteSearch\x12,\n" +
+	"\x12site_search_filter\x18\x1b \x01(\tR\x10siteSearchFilter\x12\x12\n" +
+	"\x04sort\x18\x1c \x01(\tR\x04sort\x12\x14\n" +
+	"\x05start\x18\x1d \x01(\x05R\x05start\"R\n" +
 	"\fSearchResult\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x12\n" +
 	"\x04link\x18\x02 \x01(\tR\x04link\x12\x18\n" +
