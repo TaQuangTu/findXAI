@@ -23,10 +23,23 @@ func main() {
 	defer cancel()
 
 	resp, err := c.Search(ctx, &protogen.SearchRequest{
-		Query:      "Thủ Tướng Phạm Minh Chính đang ở đâu",
-		Language:   "vi",
-		Country:    "vi",
-		NumResults: 10,
+		Q:                "Crypto market sentiment today",
+		Language:         "en",
+		Num:              10,
+		DateRestrict:     "d1", //10 days ago, can be d, w, m, y also
+		ExactTerms:       "",
+		ExcludeTerms:     "",
+		Gl:               "en",      // from country code list: https://developers.google.com/custom-search/docs/json_api_reference#countryCodes
+		Hl:               "en",      // from interface language list: https://developers.google.com/custom-search/docs/json_api_reference#interfaceLanguages
+		Hq:               "",        //extra terms to append to the main query with a logical AND operator
+		LinkSite:         "",        // search results should be links to this site
+		Lr:               "lang_en", // strict search documents written in this language
+		OrTerms:          "",        //extra terms to append to the main query with a logical OR operator
+		Safe:             "off",     //off or active
+		SiteSearch:       "",        //site should be included or excluded (see siteSearchFilter)
+		SiteSearchFilter: "e",       //e or i
+		Sort:             "",
+
 		// StartDate:  "2023-01-01",
 		// EndDate:    "2023-12-31",
 	})

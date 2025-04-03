@@ -4,12 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"findx/config"
+	"findx/internal/helpers"
 	"findx/internal/liberror"
 	"findx/internal/lockdb"
 	"findx/internal/search"
 	"findx/internal/system"
 	"findx/pkg/protogen"
-	"fmt"
 	"time"
 
 	"google.golang.org/grpc/codes"
@@ -54,7 +54,13 @@ func (s *SearchServer) toError(err error) error {
 }
 
 func (s *SearchServer) Search(ctx context.Context, req *protogen.SearchRequest) (*protogen.SearchResponse, error) {
-	if req.Query == "" {
+	if err := helpers.ValidateSearchRequest(req); err != nil {
+		return nil, s.toError(
+			liberror.WrapStack(err, "search: user use invalid parameter"),
+		)
+	}
+
+	if req.Q == "" {
 		return nil, status.Error(codes.InvalidArgument, "query is required")
 	}
 
@@ -70,12 +76,11 @@ func (s *SearchServer) Search(ctx context.Context, req *protogen.SearchRequest) 
 	if err != nil {
 		return nil, s.toError(err)
 	}
-	params := map[string]string{
-		"lr":  fmt.Sprintf("lang_%s", req.Language),
-		"cr":  req.Country,
-		"num": fmt.Sprintf("%d", req.NumResults),
-	}
-	results, statusCode, searchErr := s.googleClient.Search(ctx, availableKey.ApiKey, availableKey.EngineId, req.Query, params)
+
+	// convert req to map[string]string
+	params := helpers.ProtoMessageToMap(req)
+
+	results, statusCode, searchErr := s.googleClient.Search(ctx, availableKey.ApiKey, availableKey.EngineId, params)
 
 	var msg string
 	if searchErr != nil {

@@ -26,13 +26,12 @@ type GoogleSearchResult struct {
 	} `json:"items"`
 }
 
-func (c *Client) Search(ctx context.Context, apiKey, engineID, query string, params map[string]string) (_ []SearchResult, status int, err error) {
+func (c *Client) Search(ctx context.Context, apiKey, engineID string, params map[string]string) (_ []SearchResult, status int, err error) {
 	baseURL := "https://www.googleapis.com/customsearch/v1"
 
 	queryParams := url.Values{}
 	queryParams.Add("key", apiKey)
 	queryParams.Add("cx", engineID)
-	queryParams.Add("q", query)
 
 	// Add optional parameters
 	for key, value := range params {
