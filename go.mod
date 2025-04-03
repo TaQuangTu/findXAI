@@ -4,6 +4,7 @@ go 1.24.1
 
 require (
 	github.com/caarlos0/env v3.5.0+incompatible
+	github.com/go-errors/errors v1.5.1
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-redis/redis_rate/v9 v9.1.2
 	github.com/go-redsync/redsync/v4 v4.13.0

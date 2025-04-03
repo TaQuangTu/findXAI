@@ -209,6 +209,458 @@ func (x *SearchResponse) GetResults() []*SearchResult {
 	return nil
 }
 
+type DeactivateKeysRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ApiKeys       []string               `protobuf:"bytes,1,rep,name=api_keys,json=apiKeys,proto3" json:"api_keys,omitempty"`
+	ForceDelete   bool                   `protobuf:"varint,2,opt,name=force_delete,json=forceDelete,proto3" json:"force_delete,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeactivateKeysRequest) Reset() {
+	*x = DeactivateKeysRequest{}
+	mi := &file_api_search_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeactivateKeysRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeactivateKeysRequest) ProtoMessage() {}
+
+func (x *DeactivateKeysRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_search_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeactivateKeysRequest.ProtoReflect.Descriptor instead.
+func (*DeactivateKeysRequest) Descriptor() ([]byte, []int) {
+	return file_api_search_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *DeactivateKeysRequest) GetApiKeys() []string {
+	if x != nil {
+		return x.ApiKeys
+	}
+	return nil
+}
+
+func (x *DeactivateKeysRequest) GetForceDelete() bool {
+	if x != nil {
+		return x.ForceDelete
+	}
+	return false
+}
+
+type DeactivateKeysResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeactivateKeysResponse) Reset() {
+	*x = DeactivateKeysResponse{}
+	mi := &file_api_search_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeactivateKeysResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeactivateKeysResponse) ProtoMessage() {}
+
+func (x *DeactivateKeysResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_search_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeactivateKeysResponse.ProtoReflect.Descriptor instead.
+func (*DeactivateKeysResponse) Descriptor() ([]byte, []int) {
+	return file_api_search_proto_rawDescGZIP(), []int{4}
+}
+
+type ActivateKeysRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ApiKeys       []string               `protobuf:"bytes,1,rep,name=api_keys,json=apiKeys,proto3" json:"api_keys,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ActivateKeysRequest) Reset() {
+	*x = ActivateKeysRequest{}
+	mi := &file_api_search_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ActivateKeysRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ActivateKeysRequest) ProtoMessage() {}
+
+func (x *ActivateKeysRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_search_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ActivateKeysRequest.ProtoReflect.Descriptor instead.
+func (*ActivateKeysRequest) Descriptor() ([]byte, []int) {
+	return file_api_search_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ActivateKeysRequest) GetApiKeys() []string {
+	if x != nil {
+		return x.ApiKeys
+	}
+	return nil
+}
+
+type ActivateKeysResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ActivateKeysResponse) Reset() {
+	*x = ActivateKeysResponse{}
+	mi := &file_api_search_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ActivateKeysResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ActivateKeysResponse) ProtoMessage() {}
+
+func (x *ActivateKeysResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_search_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ActivateKeysResponse.ProtoReflect.Descriptor instead.
+func (*ActivateKeysResponse) Descriptor() ([]byte, []int) {
+	return file_api_search_proto_rawDescGZIP(), []int{6}
+}
+
+type KeyInfo struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Id             int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name           string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	ApiKey         string                 `protobuf:"bytes,3,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
+	SearchEngineId string                 `protobuf:"bytes,4,opt,name=search_engine_id,json=searchEngineId,proto3" json:"search_engine_id,omitempty"`
+	IsActive       bool                   `protobuf:"varint,5,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`
+	DailyQueries   int32                  `protobuf:"varint,6,opt,name=daily_queries,json=dailyQueries,proto3" json:"daily_queries,omitempty"`
+	StatusCode     int32                  `protobuf:"varint,7,opt,name=status_code,json=statusCode,proto3" json:"status_code,omitempty"`
+	ErrorMsg       string                 `protobuf:"bytes,8,opt,name=error_msg,json=errorMsg,proto3" json:"error_msg,omitempty"`
+	CreatedAt      string                 `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt      string                 `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *KeyInfo) Reset() {
+	*x = KeyInfo{}
+	mi := &file_api_search_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KeyInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KeyInfo) ProtoMessage() {}
+
+func (x *KeyInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_api_search_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KeyInfo.ProtoReflect.Descriptor instead.
+func (*KeyInfo) Descriptor() ([]byte, []int) {
+	return file_api_search_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *KeyInfo) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *KeyInfo) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *KeyInfo) GetApiKey() string {
+	if x != nil {
+		return x.ApiKey
+	}
+	return ""
+}
+
+func (x *KeyInfo) GetSearchEngineId() string {
+	if x != nil {
+		return x.SearchEngineId
+	}
+	return ""
+}
+
+func (x *KeyInfo) GetIsActive() bool {
+	if x != nil {
+		return x.IsActive
+	}
+	return false
+}
+
+func (x *KeyInfo) GetDailyQueries() int32 {
+	if x != nil {
+		return x.DailyQueries
+	}
+	return 0
+}
+
+func (x *KeyInfo) GetStatusCode() int32 {
+	if x != nil {
+		return x.StatusCode
+	}
+	return 0
+}
+
+func (x *KeyInfo) GetErrorMsg() string {
+	if x != nil {
+		return x.ErrorMsg
+	}
+	return ""
+}
+
+func (x *KeyInfo) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *KeyInfo) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return ""
+}
+
+type AddKeysRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Data          []*KeyInfo             `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddKeysRequest) Reset() {
+	*x = AddKeysRequest{}
+	mi := &file_api_search_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddKeysRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddKeysRequest) ProtoMessage() {}
+
+func (x *AddKeysRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_search_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddKeysRequest.ProtoReflect.Descriptor instead.
+func (*AddKeysRequest) Descriptor() ([]byte, []int) {
+	return file_api_search_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *AddKeysRequest) GetData() []*KeyInfo {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type AddKeysResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddKeysResponse) Reset() {
+	*x = AddKeysResponse{}
+	mi := &file_api_search_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddKeysResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddKeysResponse) ProtoMessage() {}
+
+func (x *AddKeysResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_search_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddKeysResponse.ProtoReflect.Descriptor instead.
+func (*AddKeysResponse) Descriptor() ([]byte, []int) {
+	return file_api_search_proto_rawDescGZIP(), []int{9}
+}
+
+type GetKeysRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ApiKeys       []string               `protobuf:"bytes,1,rep,name=api_keys,json=apiKeys,proto3" json:"api_keys,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetKeysRequest) Reset() {
+	*x = GetKeysRequest{}
+	mi := &file_api_search_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetKeysRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetKeysRequest) ProtoMessage() {}
+
+func (x *GetKeysRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_search_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetKeysRequest.ProtoReflect.Descriptor instead.
+func (*GetKeysRequest) Descriptor() ([]byte, []int) {
+	return file_api_search_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *GetKeysRequest) GetApiKeys() []string {
+	if x != nil {
+		return x.ApiKeys
+	}
+	return nil
+}
+
+type GetKeysResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Results       []*KeyInfo             `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetKeysResponse) Reset() {
+	*x = GetKeysResponse{}
+	mi := &file_api_search_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetKeysResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetKeysResponse) ProtoMessage() {}
+
+func (x *GetKeysResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_search_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetKeysResponse.ProtoReflect.Descriptor instead.
+func (*GetKeysResponse) Descriptor() ([]byte, []int) {
+	return file_api_search_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *GetKeysResponse) GetResults() []*KeyInfo {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
 var File_api_search_proto protoreflect.FileDescriptor
 
 const file_api_search_proto_rawDesc = "" +
@@ -228,9 +680,42 @@ const file_api_search_proto_rawDesc = "" +
 	"\x04link\x18\x02 \x01(\tR\x04link\x12\x18\n" +
 	"\asnippet\x18\x03 \x01(\tR\asnippet\"J\n" +
 	"\x0eSearchResponse\x128\n" +
-	"\aresults\x18\x01 \x03(\v2\x1e.google.search.v1.SearchResultR\aresults2\\\n" +
+	"\aresults\x18\x01 \x03(\v2\x1e.google.search.v1.SearchResultR\aresults\"U\n" +
+	"\x15DeactivateKeysRequest\x12\x19\n" +
+	"\bapi_keys\x18\x01 \x03(\tR\aapiKeys\x12!\n" +
+	"\fforce_delete\x18\x02 \x01(\bR\vforceDelete\"\x18\n" +
+	"\x16DeactivateKeysResponse\"0\n" +
+	"\x13ActivateKeysRequest\x12\x19\n" +
+	"\bapi_keys\x18\x01 \x03(\tR\aapiKeys\"\x16\n" +
+	"\x14ActivateKeysResponse\"\xae\x02\n" +
+	"\aKeyInfo\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x17\n" +
+	"\aapi_key\x18\x03 \x01(\tR\x06apiKey\x12(\n" +
+	"\x10search_engine_id\x18\x04 \x01(\tR\x0esearchEngineId\x12\x1b\n" +
+	"\tis_active\x18\x05 \x01(\bR\bisActive\x12#\n" +
+	"\rdaily_queries\x18\x06 \x01(\x05R\fdailyQueries\x12\x1f\n" +
+	"\vstatus_code\x18\a \x01(\x05R\n" +
+	"statusCode\x12\x1b\n" +
+	"\terror_msg\x18\b \x01(\tR\berrorMsg\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\t \x01(\tR\tcreatedAt\x12\x1d\n" +
+	"\n" +
+	"updated_at\x18\n" +
+	" \x01(\tR\tupdatedAt\"?\n" +
+	"\x0eAddKeysRequest\x12-\n" +
+	"\x04data\x18\x01 \x03(\v2\x19.google.search.v1.KeyInfoR\x04data\"\x11\n" +
+	"\x0fAddKeysResponse\"+\n" +
+	"\x0eGetKeysRequest\x12\x19\n" +
+	"\bapi_keys\x18\x01 \x03(\tR\aapiKeys\"F\n" +
+	"\x0fGetKeysResponse\x123\n" +
+	"\aresults\x18\x01 \x03(\v2\x19.google.search.v1.KeyInfoR\aresults2\xc0\x03\n" +
 	"\rSearchService\x12K\n" +
-	"\x06Search\x12\x1f.google.search.v1.SearchRequest\x1a .google.search.v1.SearchResponseB\x0eZ\fpkg/protogenb\x06proto3"
+	"\x06Search\x12\x1f.google.search.v1.SearchRequest\x1a .google.search.v1.SearchResponse\x12c\n" +
+	"\x0eDeactivateKeys\x12'.google.search.v1.DeactivateKeysRequest\x1a(.google.search.v1.DeactivateKeysResponse\x12]\n" +
+	"\fActivateKeys\x12%.google.search.v1.ActivateKeysRequest\x1a&.google.search.v1.ActivateKeysResponse\x12N\n" +
+	"\aAddKeys\x12 .google.search.v1.AddKeysRequest\x1a!.google.search.v1.AddKeysResponse\x12N\n" +
+	"\aGetKeys\x12 .google.search.v1.GetKeysRequest\x1a!.google.search.v1.GetKeysResponseB\x0eZ\fpkg/protogenb\x06proto3"
 
 var (
 	file_api_search_proto_rawDescOnce sync.Once
@@ -244,21 +729,40 @@ func file_api_search_proto_rawDescGZIP() []byte {
 	return file_api_search_proto_rawDescData
 }
 
-var file_api_search_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_api_search_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_api_search_proto_goTypes = []any{
-	(*SearchRequest)(nil),  // 0: google.search.v1.SearchRequest
-	(*SearchResult)(nil),   // 1: google.search.v1.SearchResult
-	(*SearchResponse)(nil), // 2: google.search.v1.SearchResponse
+	(*SearchRequest)(nil),          // 0: google.search.v1.SearchRequest
+	(*SearchResult)(nil),           // 1: google.search.v1.SearchResult
+	(*SearchResponse)(nil),         // 2: google.search.v1.SearchResponse
+	(*DeactivateKeysRequest)(nil),  // 3: google.search.v1.DeactivateKeysRequest
+	(*DeactivateKeysResponse)(nil), // 4: google.search.v1.DeactivateKeysResponse
+	(*ActivateKeysRequest)(nil),    // 5: google.search.v1.ActivateKeysRequest
+	(*ActivateKeysResponse)(nil),   // 6: google.search.v1.ActivateKeysResponse
+	(*KeyInfo)(nil),                // 7: google.search.v1.KeyInfo
+	(*AddKeysRequest)(nil),         // 8: google.search.v1.AddKeysRequest
+	(*AddKeysResponse)(nil),        // 9: google.search.v1.AddKeysResponse
+	(*GetKeysRequest)(nil),         // 10: google.search.v1.GetKeysRequest
+	(*GetKeysResponse)(nil),        // 11: google.search.v1.GetKeysResponse
 }
 var file_api_search_proto_depIdxs = []int32{
-	1, // 0: google.search.v1.SearchResponse.results:type_name -> google.search.v1.SearchResult
-	0, // 1: google.search.v1.SearchService.Search:input_type -> google.search.v1.SearchRequest
-	2, // 2: google.search.v1.SearchService.Search:output_type -> google.search.v1.SearchResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	1,  // 0: google.search.v1.SearchResponse.results:type_name -> google.search.v1.SearchResult
+	7,  // 1: google.search.v1.AddKeysRequest.data:type_name -> google.search.v1.KeyInfo
+	7,  // 2: google.search.v1.GetKeysResponse.results:type_name -> google.search.v1.KeyInfo
+	0,  // 3: google.search.v1.SearchService.Search:input_type -> google.search.v1.SearchRequest
+	3,  // 4: google.search.v1.SearchService.DeactivateKeys:input_type -> google.search.v1.DeactivateKeysRequest
+	5,  // 5: google.search.v1.SearchService.ActivateKeys:input_type -> google.search.v1.ActivateKeysRequest
+	8,  // 6: google.search.v1.SearchService.AddKeys:input_type -> google.search.v1.AddKeysRequest
+	10, // 7: google.search.v1.SearchService.GetKeys:input_type -> google.search.v1.GetKeysRequest
+	2,  // 8: google.search.v1.SearchService.Search:output_type -> google.search.v1.SearchResponse
+	4,  // 9: google.search.v1.SearchService.DeactivateKeys:output_type -> google.search.v1.DeactivateKeysResponse
+	6,  // 10: google.search.v1.SearchService.ActivateKeys:output_type -> google.search.v1.ActivateKeysResponse
+	9,  // 11: google.search.v1.SearchService.AddKeys:output_type -> google.search.v1.AddKeysResponse
+	11, // 12: google.search.v1.SearchService.GetKeys:output_type -> google.search.v1.GetKeysResponse
+	8,  // [8:13] is the sub-list for method output_type
+	3,  // [3:8] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_api_search_proto_init() }
@@ -272,7 +776,7 @@ func file_api_search_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_search_proto_rawDesc), len(file_api_search_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

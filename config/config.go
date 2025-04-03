@@ -10,6 +10,10 @@ type Config struct {
 	POSTGRES_DSN           string `env:"POSTGRES_DSN"`
 	REDIS_LOCKDB_DSN       string `env:"REDIS_LOCKDB_DSN"`
 	REDIS_RATE_LIMITDB_DSN string `env:"REDIS_RATE_LIMITDB_DSN"`
+
+	// default requests per day is 100
+	MAX_REQUEST_PER_DAY int `env:"MAX_REQUEST_PER_DAY" envDefault:"100"`
+	APP_KEY_BUCKET      int `env:"APP_KEY_BUCKET" envDefault:"3"`
 }
 
 func NewConfig() *Config {

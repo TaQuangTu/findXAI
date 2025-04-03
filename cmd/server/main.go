@@ -43,6 +43,9 @@ func main() {
 	searchServer := server.NewSearchServer(cfg, lockDb, rateLimiter)
 	protogen.RegisterSearchServiceServer(s, searchServer)
 
+	// Start a goroutine for daily count reset at UTC-7 midnight
+	go server.StartDailyResetTask(cfg, lockDb, searchServer)
+
 	defer system.SafeClose()
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {

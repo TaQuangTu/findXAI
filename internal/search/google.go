@@ -2,21 +2,19 @@ package search
 
 import (
 	"context"
-	"encoding/json"
+	"findx/internal/libhttp"
 	"fmt"
-	"io"
-	"net/http"
 	"net/url"
 	"time"
 )
 
 type Client struct {
-	httpClient *http.Client
+	httpClient libhttp.IHttpRequest
 }
 
 func NewClient() *Client {
 	return &Client{
-		httpClient: &http.Client{Timeout: 10 * time.Second},
+		httpClient: libhttp.NewHttpClient(),
 	}
 }
 
@@ -28,7 +26,7 @@ type GoogleSearchResult struct {
 	} `json:"items"`
 }
 
-func (c *Client) Search(ctx context.Context, apiKey, engineID, query string, params map[string]string) ([]SearchResult, error) {
+func (c *Client) Search(ctx context.Context, apiKey, engineID, query string, params map[string]string) (_ []SearchResult, status int, err error) {
 	baseURL := "https://www.googleapis.com/customsearch/v1"
 
 	queryParams := url.Values{}
@@ -43,33 +41,18 @@ func (c *Client) Search(ctx context.Context, apiKey, engineID, query string, par
 		}
 	}
 
-	fullURL := fmt.Sprintf("%s?%s", baseURL, queryParams.Encode())
-
-	req, err := http.NewRequestWithContext(ctx, "GET", fullURL, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
-
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to make request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-	}
-
-	var result GoogleSearchResult
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %w", err)
-	}
-	err = json.Unmarshal(body, &result)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
-	}
+	var (
+		fullURL = fmt.Sprintf("%s?%s", baseURL, queryParams.Encode())
+		result  GoogleSearchResult
+	)
+	status, err = c.httpClient.Request(
+		ctx,
+		libhttp.RequestOption{
+			RequestTimeout: 10 * time.Second,
+			Method:         libhttp.GET,
+			Url:            fullURL,
+		},
+		&result)
 
 	results := make([]SearchResult, 0, len(result.Items))
 	for _, item := range result.Items {
@@ -79,8 +62,7 @@ func (c *Client) Search(ctx context.Context, apiKey, engineID, query string, par
 			Snippet: item.Snippet,
 		})
 	}
-
-	return results, nil
+	return results, status, err
 }
 
 type SearchResult struct {
