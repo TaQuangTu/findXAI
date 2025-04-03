@@ -4,6 +4,7 @@ import "github.com/caarlos0/env"
 
 type Config struct {
 	//service
+	HOST string `env:"HOST" default:"localhost"`
 	PORT string `env:"PORT" default:"50051"`
 
 	//postgres
