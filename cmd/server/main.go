@@ -5,7 +5,8 @@ import (
 	"findx/internal/lockdb"
 	"findx/internal/server"
 	"findx/internal/system"
-	"findx/pkg/protogen"
+	"findx/pkg/contentsvc"
+	"findx/pkg/searchsvc"
 	"fmt"
 	"log"
 	"net"
@@ -41,7 +42,11 @@ func main() {
 	}
 	s := grpc.NewServer()
 	searchServer := server.NewSearchServer(cfg, lockDb, rateLimiter)
-	protogen.RegisterSearchServiceServer(s, searchServer)
+	searchsvc.RegisterSearchServiceServer(s, searchServer)
+
+	// Register content service
+	contentServer := server.NewContentServer()
+	contentsvc.RegisterContentServiceServer(s, contentServer)
 
 	// Start a goroutine for daily count reset at UTC-7 midnight
 	go server.StartDailyResetTask(cfg, lockDb, searchServer)

@@ -18,6 +18,10 @@ FROM alpine:3.21.3
 
 WORKDIR /app
 
+# Install dependencies
+RUN apk add --no-cache \
+    links=2.25
+
 # Copy the binary and protobuf definitions
 COPY --from=builder /server /app/server
 COPY --from=builder /app/pkg/protogen /app/pkg/protogen

@@ -37,7 +37,7 @@ type (
 	}
 )
 
-func NewHttpClient() *HttpClient {
+func NewHttpClient() IHttpRequest {
 	return &HttpClient{}
 }
 
