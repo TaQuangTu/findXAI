@@ -25,18 +25,18 @@ var (
 type ContentServer struct {
 	contentsvc.UnimplementedContentServiceServer
 
-	linksCmd libcmd.ICustomCmd
+	curlCmd libcmd.ICustomCmd
 }
 
 func NewContentServer() *ContentServer {
 	return &ContentServer{
-		linksCmd: libcmd.NewCustomCmd("links"),
+		curlCmd: libcmd.NewCustomCmd("curl"),
 	}
 }
 
 // TODO: support stream response later
-// TODO: support skipping errors
 // TODO: support store document in embedding db and mapping to postgres for future use
+// TODO: consider replacing curl by go-colly
 func (s *ContentServer) ExtractContentFromLinks(ctx context.Context, request *contentsvc.ExtractContentFromLinksRequest) (_ *contentsvc.ExtractContentFromLinksReponse, err error) {
 	if len(request.Links) == 0 {
 		err = Error(
@@ -48,23 +48,16 @@ func (s *ContentServer) ExtractContentFromLinks(ctx context.Context, request *co
 			Contents: make([]*contentsvc.ExtractedContent, 0),
 		}
 
-		maxConcurrency = 50
-		slotLock       = make(chan struct{}, maxConcurrency)
-
 		mu        sync.Mutex
 		eg, egCtx = errgroup.WithContext(ctx)
 	)
 	for _, link := range request.Links {
 		link := link
 
-		// acquire slot
-		slotLock <- struct{}{}
 		eg.Go(func() error {
-			// release slot after done
-			defer func() { <-slotLock }()
 			var content *contentsvc.ExtractedContent
 
-			_, err := s.linksCmd.WithStreamReader(func(readCloser io.ReadCloser) error {
+			_, err := s.curlCmd.WithStreamReader(func(readCloser io.ReadCloser) error {
 				defer readCloser.Close()
 
 				article, err := libDocumentRead.FromReader(readCloser, nil)
@@ -83,7 +76,7 @@ func (s *ContentServer) ExtractContentFromLinks(ctx context.Context, request *co
 				return nil
 
 				// TODO: support dynamic selected user-agent
-			}).Run(egCtx, "-source", "-http.fake-user-agent", "Mozilla/5.0", link)
+			}).Run(egCtx, "-sL", "--compressed", "-A", "Mozilla/5.0", link)
 			if err != nil {
 				return fmt.Errorf("failed to extract link [%s]: %w", link, err)
 			}

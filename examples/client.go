@@ -24,7 +24,7 @@ func main() {
 	defer cancel()
 
 	resp, err := c.ExtractContentFromLinks(ctx, &contentsvc.ExtractContentFromLinksRequest{
-		Links: []string{"https://vov.vn/thi-truong/chung-khoan/chung-khoan-sang-44-vn-index-tiep-tuc-lao-doc-boc-hoi-gan-50-diem-post1189618.vov"},
+		Links: []string{"https://tuoitre.vn/gia-vang-usd-tang-thang-dung-sau-khi-ong-trump-cong-bo-muc-ap-thue-moi-20250403095120977.htm"},
 	})
 	if err != nil {
 		log.Fatalf("could not search: %v", err)
