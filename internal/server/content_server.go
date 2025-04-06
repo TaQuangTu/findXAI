@@ -6,13 +6,15 @@ import (
 	"io"
 	"regexp"
 	"strings"
-	"sync"
+	"time"
 
 	"findx/internal/libcmd"
 	"findx/internal/liberror"
+	"findx/internal/lockdb"
 	"findx/pkg/contentsvc"
 
 	libDocumentRead "github.com/go-shiori/go-readability"
+	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -24,31 +26,35 @@ var (
 
 type ContentServer struct {
 	contentsvc.UnimplementedContentServiceServer
+	lockDb lockdb.ILockDb
 
 	curlCmd libcmd.ICustomCmd
 }
 
-func NewContentServer() *ContentServer {
+func NewContentServer(lockDb lockdb.ILockDb) *ContentServer {
 	return &ContentServer{
+		lockDb:  lockDb,
 		curlCmd: libcmd.NewCustomCmd("curl"),
 	}
 }
 
-// TODO: support stream response later
-// TODO: support store document in embedding db and mapping to postgres for future use
-// TODO: consider replacing curl by go-colly
 func (s *ContentServer) ExtractContentFromLinks(ctx context.Context, request *contentsvc.ExtractContentFromLinksRequest) (_ *contentsvc.ExtractContentFromLinksReponse, err error) {
+	requestid := uuid.NewString()
 	if len(request.Links) == 0 {
 		err = Error(
 			liberror.WrapStack(liberror.ErrorDataInvalid, "links is required"))
 		return
 	}
+	queueLock, err := s.lockDb.AcquireSlot(ctx, "content:extract:concurrency:lock", 50, 10*time.Second, 1*time.Second)
+	if err != nil {
+		return nil, err
+	}
+	defer queueLock.ReleaseSlot(ctx)
 	var (
 		response = &contentsvc.ExtractContentFromLinksReponse{
 			Contents: make([]*contentsvc.ExtractedContent, 0),
 		}
 
-		mu        sync.Mutex
 		eg, egCtx = errgroup.WithContext(ctx)
 	)
 	for _, link := range request.Links {
@@ -81,8 +87,11 @@ func (s *ContentServer) ExtractContentFromLinks(ctx context.Context, request *co
 				return fmt.Errorf("failed to extract link [%s]: %w", link, err)
 			}
 
-			mu.Lock()
-			defer mu.Unlock()
+			mutexLock, err := s.lockDb.LockSimple(ctx, "content:extract:request:%s", requestid)
+			if err != nil {
+				return err
+			}
+			defer mutexLock.Unlock(ctx)
 			response.Contents = append(response.Contents, content)
 
 			return nil

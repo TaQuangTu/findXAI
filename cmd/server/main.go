@@ -45,7 +45,7 @@ func main() {
 	searchsvc.RegisterSearchServiceServer(s, searchServer)
 
 	// Register content service
-	contentServer := server.NewContentServer()
+	contentServer := server.NewContentServer(lockDb)
 	contentsvc.RegisterContentServiceServer(s, contentServer)
 
 	// Start a goroutine for daily count reset at UTC-7 midnight
