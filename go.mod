@@ -9,7 +9,6 @@ require (
 	github.com/go-redis/redis_rate/v9 v9.1.2
 	github.com/go-redsync/redsync/v4 v4.13.0
 	github.com/go-shiori/go-readability v0.0.0-20250217085726-9f5bf5ca7612
-	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.10.9
 	golang.org/x/sync v0.12.0
 	google.golang.org/grpc v1.71.0
