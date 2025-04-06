@@ -8,7 +8,7 @@ import (
 )
 
 // StartDailyResetTask launches the background process to reset daily counts at midnight UTC-7
-func StartDailyResetTask(cfg *config.Config, lockDb *lockdb.LockDbRedis, searchServer *SearchServer) {
+func StartDailyResetTask(cfg *config.Config, lockDb lockdb.ILockDb, searchServer *SearchServer) {
 	utcMinus7 := getUTCMinus7Location()
 
 	for {
@@ -43,7 +43,7 @@ func sleepUntilNextReset(utcMinus7 *time.Location) {
 }
 
 // performDailyReset attempts to acquire a lock and reset the daily counts
-func performDailyReset(cfg *config.Config, lockDb *lockdb.LockDbRedis, searchServer *SearchServer) {
+func performDailyReset(cfg *config.Config, lockDb lockdb.ILockDb, searchServer *SearchServer) {
 
 	// TODO: Try to acquire lock to ensure only one instance resets the counts
 	// goCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

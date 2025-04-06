@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package google.search.v1;
 
-option go_package = "pkg/protogen";
+option go_package = "pkg/searchsvc";
 
 service SearchService {
   rpc Search(SearchRequest) returns (SearchResponse);

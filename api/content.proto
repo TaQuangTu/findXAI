@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package google.search.v1;
+
+option go_package = "pkg/contentsvc";
+
+service ContentService {
+  rpc ExtractContentFromLinks(ExtractContentFromLinksRequest) returns (ExtractContentFromLinksReponse);
+}
+
+message ExtractContentFromLinksRequest {
+  repeated string links = 1;
+}
+
+message ExtractContentFromLinksReponse {
+  repeated ExtractedContent contents = 1;
+}
+
+message ExtractedContent {
+  string link = 1;
+  string title = 2;
+  string content = 3;
+}
