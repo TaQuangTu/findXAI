@@ -1,20 +1,19 @@
 package server
 
 import (
+	"bytes"
 	"context"
-	"fmt"
-	"io"
 	"regexp"
 	"strings"
 	"sync"
 	"time"
 
-	"findx/internal/libcmd"
 	"findx/internal/liberror"
 	"findx/internal/lockdb"
 	"findx/pkg/contentsvc"
 
 	libDocumentRead "github.com/go-shiori/go-readability"
+	colly "github.com/gocolly/colly/v2"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -27,14 +26,11 @@ var (
 type ContentServer struct {
 	contentsvc.UnimplementedContentServiceServer
 	lockDb lockdb.ILockDb
-
-	curlCmd libcmd.ICustomCmd
 }
 
 func NewContentServer(lockDb lockdb.ILockDb) *ContentServer {
 	return &ContentServer{
-		lockDb:  lockDb,
-		curlCmd: libcmd.NewCustomCmd("curl"),
+		lockDb: lockDb,
 	}
 }
 
@@ -49,8 +45,8 @@ func (s *ContentServer) ExtractContentFromLinks(ctx context.Context, request *co
 			Contents: make([]*contentsvc.ExtractedContent, 0),
 		}
 
-		mutex     = sync.Mutex{}
-		eg, egCtx = errgroup.WithContext(ctx)
+		mutex = sync.Mutex{}
+		eg, _ = errgroup.WithContext(ctx)
 	)
 	for _, link := range request.Links {
 		// Maximum allow 50 concurrent goroutines at a time
@@ -59,17 +55,20 @@ func (s *ContentServer) ExtractContentFromLinks(ctx context.Context, request *co
 			return nil, err
 		}
 
-		link := link
-		eg.Go(func() error {
+		eg.Go(func() (err error) {
 			defer queueLock.ReleaseSlot(ctx)
 			var content *contentsvc.ExtractedContent
-
-			_, err := s.curlCmd.WithStreamReader(func(readCloser io.ReadCloser) error {
-				defer readCloser.Close()
-
-				article, err := libDocumentRead.FromReader(readCloser, nil)
-				if err != nil {
-					return err
+			var (
+				htmlCollector = colly.NewCollector()
+				callbackErr   error
+			)
+			htmlCollector.OnResponse(func(r *colly.Response) {
+				var (
+					article libDocumentRead.Article
+				)
+				article, callbackErr = libDocumentRead.FromReader(bytes.NewBuffer(r.Body), nil)
+				if callbackErr != nil {
+					return
 				}
 				cleanedContent := strings.TrimSpace(article.TextContent)
 				cleanedContent = lineTrim.ReplaceAllString(cleanedContent, "")
@@ -80,18 +79,18 @@ func (s *ContentServer) ExtractContentFromLinks(ctx context.Context, request *co
 					Content: cleanedContent,
 					Title:   article.Title,
 				}
-				return nil
-
-				// TODO: support dynamic selected user-agent
-			}).Run(egCtx, "-sL", "--compressed", "-A", "Mozilla/5.0", link)
+			})
+			err = htmlCollector.Visit(link)
 			if err != nil {
-				return fmt.Errorf("failed to extract link [%s]: %w", link, err)
+				return err
+			}
+			if callbackErr != nil {
+				return callbackErr
 			}
 
 			mutex.Lock()
 			defer mutex.Unlock()
 			response.Contents = append(response.Contents, content)
-
 			return nil
 		})
 	}
