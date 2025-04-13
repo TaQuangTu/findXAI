@@ -45,5 +45,6 @@ Then retry the proto gen command.
 * gRPC gen Python code:
 
 ```bash
+python -m grpc_tools.protoc -I./api --python_out=. --pyi_out=. --grpc_python_out=. content.proto
 python -m grpc_tools.protoc -I./api --python_out=. --pyi_out=. --grpc_python_out=. search.proto
 ```
