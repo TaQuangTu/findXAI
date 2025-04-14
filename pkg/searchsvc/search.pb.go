@@ -4,7 +4,7 @@
 // 	protoc        v3.12.4
 // source: api/search.proto
 
-package protogen
+package searchsvc
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -925,7 +925,7 @@ const file_api_search_proto_rawDesc = "" +
 	"\x0eDeactivateKeys\x12'.google.search.v1.DeactivateKeysRequest\x1a(.google.search.v1.DeactivateKeysResponse\x12]\n" +
 	"\fActivateKeys\x12%.google.search.v1.ActivateKeysRequest\x1a&.google.search.v1.ActivateKeysResponse\x12N\n" +
 	"\aAddKeys\x12 .google.search.v1.AddKeysRequest\x1a!.google.search.v1.AddKeysResponse\x12N\n" +
-	"\aGetKeys\x12 .google.search.v1.GetKeysRequest\x1a!.google.search.v1.GetKeysResponseB\x0eZ\fpkg/protogenb\x06proto3"
+	"\aGetKeys\x12 .google.search.v1.GetKeysRequest\x1a!.google.search.v1.GetKeysResponseB\x0fZ\rpkg/searchsvcb\x06proto3"
 
 var (
 	file_api_search_proto_rawDescOnce sync.Once

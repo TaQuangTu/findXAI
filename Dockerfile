@@ -18,9 +18,13 @@ FROM alpine:3.21.3
 
 WORKDIR /app
 
+# Install dependencies
+RUN apk add --no-cache \
+    curl=8.12.1-r1
+
 # Copy the binary and protobuf definitions
 COPY --from=builder /server /app/server
-COPY --from=builder /app/pkg/protogen /app/pkg/protogen
+COPY --from=builder /app/pkg /app/pkg
 
 # Install grpc_health_probe
 RUN wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.37/grpc_health_probe-linux-amd64 && \

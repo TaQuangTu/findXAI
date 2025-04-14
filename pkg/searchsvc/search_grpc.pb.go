@@ -4,7 +4,7 @@
 // - protoc             v3.12.4
 // source: api/search.proto
 
-package protogen
+package searchsvc
 
 import (
 	context "context"

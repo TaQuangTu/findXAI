@@ -2,7 +2,7 @@ package server
 
 import (
 	"errors"
-	"findx/pkg/protogen"
+	"findx/pkg/searchsvc"
 	"fmt"
 	"reflect"
 	"regexp"
@@ -33,7 +33,7 @@ var (
 	validSearchType   = map[string]bool{"image": true}
 )
 
-func ValidateSearchRequest(req *protogen.SearchRequest) error {
+func ValidateSearchRequest(req *searchsvc.SearchRequest) error {
 	if req.SearchType != "" && !validSearchType[req.SearchType] {
 		return errors.New("invalid search type value, can be null or image")
 	}

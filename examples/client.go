@@ -5,24 +5,60 @@ import (
 	"log"
 	"time"
 
-	"findx/pkg/protogen"
+	"findx/pkg/contentsvc"
+	"findx/pkg/searchsvc"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
+	//Try whatever function you want here, don't remove the old ones pleaseeee :))
+
+	do_content_extraction()
+	do_web_search()
+}
+
+func do_content_extraction() {
 	conn, err := grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
 
-	c := protogen.NewSearchServiceClient(conn)
+	c := contentsvc.NewContentServiceClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	resp, err := c.Search(ctx, &protogen.SearchRequest{
+	resp, err := c.ExtractContentFromLinks(ctx, &contentsvc.ExtractContentFromLinksRequest{
+		Links: []string{"https://baomoi.com/blockchain-tag2567.epi"},
+	})
+	if err != nil {
+		log.Fatalf("could not search: %v", err)
+	}
+
+	for _, result := range resp.Contents {
+		log.Printf("Title: %s", result.Title)
+		log.Printf("Content: %s", result.Content)
+		log.Printf("Link: %s", result.Link)
+		log.Println("------------------------------")
+	}
+}
+
+func do_web_search() {
+	conn, err := grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+
+	c := searchsvc.NewSearchServiceClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	resp, err := c.Search(ctx, &searchsvc.SearchRequest{
 		Q:                "Crypto market sentiment today",
 		Language:         "en",
 		Num:              10,

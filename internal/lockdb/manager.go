@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/go-redsync/redsync/v4"
+	redsync "github.com/go-redsync/redsync/v4"
 	"github.com/go-redsync/redsync/v4/redis/goredis/v8"
 )
 
@@ -16,13 +16,15 @@ type ILockDb interface {
 	Lock(ctx context.Context, key string, timeout, retryDelay time.Duration) (*OurMutex, error)
 	LockSimple(ctx context.Context, key string, params ...any) (*OurMutex, error)
 	TryLock(ctx context.Context, key string, params ...any) (*OurMutex, error)
+
+	AcquireSlot(ctx context.Context, key string, maxSlot int, timeout, retryDelay time.Duration) (*OurSemaphore, error)
 }
 
 type LockDbRedis struct {
-	*OurRedSync
+	*OurLockDb
 }
 
-func NewLockDbRedis(redisDns string) (*LockDbRedis, error) {
+func NewLockDbRedis(redisDns string) (ILockDb, error) {
 	redisAddr, redisDb, err := helpers.ExtractRedisDetails(redisDns)
 	if err != nil {
 		return nil, fmt.Errorf("invalid redis db")
@@ -36,8 +38,10 @@ func NewLockDbRedis(redisDns string) (*LockDbRedis, error) {
 		systempool = goredis.NewPool(client)
 	)
 	return &LockDbRedis{
-		OurRedSync: &OurRedSync{
-			Redsync:            redsync.New(systempool),
+		OurLockDb: &OurLockDb{
+			Redsync:     redsync.New(systempool),
+			redisClient: client,
+
 			defaultLockTimeout: 0,
 			defaultRetryDelay:  0,
 		},
@@ -82,4 +86,22 @@ func (l *LockDbRedis) TryLock(ctx context.Context, key string, params ...any) (*
 		return nil, err
 	}
 	return mux, nil
+}
+
+func (l *LockDbRedis) AcquireSlot(ctx context.Context, key string, maxSlot int, timeout, retryDelay time.Duration) (*OurSemaphore, error) {
+	var (
+		semaphore = NewSemaphore(
+			l.redisClient,
+			key,
+			WithMaxSlot(maxSlot),
+			WithExpiry(timeout),
+			WithRetryDelay(retryDelay),
+			WithRetries(int(timeout/retryDelay)),
+		)
+	)
+	err := semaphore.AcquireSlot(ctx, key)
+	if err != nil {
+		return nil, err
+	}
+	return semaphore, nil
 }

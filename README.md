@@ -27,6 +27,7 @@ Make sure you see this message as a confirm for a success installation.
 
 ```bash
 protoc --go_out=. --go-grpc_out=. api/search.proto
+protoc --go_out=. --go-grpc_out=. api/content.proto
 ```
 
 If getting error due to lacking build dependencies. Install Go gRPC generation utilities first:
@@ -45,5 +46,6 @@ Then retry the proto gen command.
 * gRPC gen Python code:
 
 ```bash
+python -m grpc_tools.protoc -I./api --python_out=. --pyi_out=. --grpc_python_out=. content.proto
 python -m grpc_tools.protoc -I./api --python_out=. --pyi_out=. --grpc_python_out=. search.proto
 ```
