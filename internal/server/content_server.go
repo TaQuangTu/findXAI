@@ -6,7 +6,6 @@ import (
 	"html"
 	"regexp"
 	"strings"
-	"sync"
 	"time"
 
 	"findx/internal/liberror"
@@ -85,7 +84,6 @@ func (s *ContentServer) ExtractContentFromLinks(ctx context.Context, request *co
 			Contents: make([]*contentsvc.ExtractedContent, len(request.Links)),
 		}
 
-		mutex = sync.Mutex{}
 		eg, _ = errgroup.WithContext(ctx)
 	)
 	for index, link := range request.Links {
@@ -94,7 +92,6 @@ func (s *ContentServer) ExtractContentFromLinks(ctx context.Context, request *co
 		if err != nil {
 			return nil, err
 		}
-		index := index
 		eg.Go(func() (err error) {
 			defer queueLock.ReleaseSlot(ctx)
 			var content *contentsvc.ExtractedContent
@@ -126,8 +123,6 @@ func (s *ContentServer) ExtractContentFromLinks(ctx context.Context, request *co
 				return callbackErr
 			}
 
-			mutex.Lock()
-			defer mutex.Unlock()
 			response.Contents[index] = content
 			return nil
 		})
