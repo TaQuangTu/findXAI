@@ -94,11 +94,27 @@ func (s *ContentServer) ExtractContentFromLinks(ctx context.Context, request *co
 		}
 		eg.Go(func() (err error) {
 			defer queueLock.ReleaseSlot(ctx)
-			var content *contentsvc.ExtractedContent
 			var (
 				htmlCollector = colly.NewCollector()
 				callbackErr   error
+
+				content *contentsvc.ExtractedContent = &contentsvc.ExtractedContent{
+					Link:    link,
+					Content: "",
+					Title:   "",
+				}
 			)
+
+			htmlCollector.OnError(func(r *colly.Response, err error) {
+				if err == nil {
+					return
+				}
+				switch r.StatusCode {
+				case 403, 404, 0:
+					callbackErr = liberror.ErrorNotFound.Wrap(err)
+				}
+			})
+
 			htmlCollector.OnResponse(func(r *colly.Response) {
 				var (
 					article libDocumentRead.Article
@@ -115,12 +131,19 @@ func (s *ContentServer) ExtractContentFromLinks(ctx context.Context, request *co
 					Title:   article.Title,
 				}
 			})
+
 			err = htmlCollector.Visit(link)
 			if err != nil {
-				return err
+				if liberror.IsSameError(callbackErr, liberror.ErrorNotFound) {
+					callbackErr = nil
+				} else {
+					err = liberror.WrapMessage(err, "visit link failed").WithField("link", link)
+					return err
+				}
 			}
 			if callbackErr != nil {
-				return callbackErr
+				err = liberror.WrapMessage(callbackErr, "extract content err").WithField("link", link)
+				return
 			}
 
 			response.Contents[index] = content
