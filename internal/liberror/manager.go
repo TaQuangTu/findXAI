@@ -13,7 +13,6 @@ type Failure interface {
 	IsOurError() bool
 	Error() string
 	Data() AdditionalData
-	Severity() Severity
 }
 
 func WrapMessage(err error, msg string) *OurError {
